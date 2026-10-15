@@ -1,0 +1,1 @@
+Dear ImGui v1.92.9b (https://github.com/ocornut/imgui, tag v1.92.9b), MIT license (LICENSE.txt). Unmodified: core + Win32 and Vulkan backends.

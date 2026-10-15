@@ -1,0 +1,16 @@
+; Own import library (port's portable toolchain): only the names used by the emitted C.
+LIBRARY api-ms-win-crt-stdio-l1-1-0.dll
+EXPORTS
+    __acrt_iob_func
+    __stdio_common_vfprintf
+    __stdio_common_vsprintf
+    fopen
+    fclose
+    fread
+    fwrite
+    fseek
+    ftell
+    fflush
+    fputs
+    fputc
+    puts

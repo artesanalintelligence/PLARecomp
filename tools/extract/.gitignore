@@ -1,0 +1,4 @@
+# Test outputs
+/tests/_build/
+__pycache__/
+.pytest_cache/

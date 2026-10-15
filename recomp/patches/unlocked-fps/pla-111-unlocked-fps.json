@@ -1,0 +1,531 @@
+{
+ "format": "pla-patchlist-v1",
+ "name": "Unlocked FPS (dynamic delta)",
+ "description": "Present interval 1 (without the 30 cap) and the game clocks take the real time of the last frame, clamped to [1/1000, 1/15] s. Sites that add 1/30 per frame read that dt from .bss. The real cap is set by suyu's limiter/vsync.",
+ "title_id": "01001F5010DFA000",
+ "version": "1.1.1",
+ "module": "main",
+ "build_id": "AEE8F150DDA1B5A838806E1A5EA6827AD9F3C51E",
+ "offsets": "offset of the main module (= Ghidra address - 0x7100000000; = pchtxt offset with offset_shift 0x100; IPS = offset + 0x100)",
+ "text_end_original": "0x32A5690",
+ "requires_text_extension_to": "0x32A5900",
+ "runtime_vars_bss": {
+  "base": "0x4350F00",
+  "last_tick": "+0x00 u64",
+  "frame_ns": "+0x08 u64",
+  "dt": "+0x10 f32",
+  "neg_dt": "+0x14 f32",
+  "neg10_inv_dt": "+0x1c f32",
+  "inv_dt_x4": "+0x20 f32[4]",
+  "dt_clamp_ns": [
+   1000000,
+   66666667
+  ]
+ },
+ "generator": "tools/patch/gen_60fps.py",
+ "patches": [
+  {
+   "offset": "0xAFBBC4",
+   "original": "2811915208a1b772",
+   "patched": "a8c201b008154fb9",
+   "note": "AI node (calls 0x1984fc8): s0 *= -1/30 (vertical step) -> -dt",
+   "asm_original": "mov w8, #0x8889; movk w8, #0xbd08, lsl #16",
+   "asm_patched": "adrp x8, #0x4350000; ldr w8, [x8, #0xf14]"
+  },
+  {
+   "offset": "0x13B339C",
+   "original": "2811915208a1a772",
+   "patched": "e87c01b008114fb9",
+   "note": "vtable_7104114778::vf9: timer +0x48c += 1/30 -> real dt",
+   "asm_original": "mov w8, #0x8889; movk w8, #0x3d08, lsl #16",
+   "asm_patched": "adrp x8, #0x4350000; ldr w8, [x8, #0xf10]"
+  },
+  {
+   "offset": "0x167FF0C",
+   "original": "2811915208a1a772",
+   "patched": "886601b008114fb9",
+   "note": "FUN_710167f988: timer +0x190 += 1/30 -> real dt",
+   "asm_original": "mov w8, #0x8889; movk w8, #0x3d08, lsl #16",
+   "asm_patched": "adrp x8, #0x4350000; ldr w8, [x8, #0xf10]"
+  },
+  {
+   "offset": "0x16832C0",
+   "original": "2811915208a1a772",
+   "patched": "686601b008114fb9",
+   "note": "FUN_710168300c: timer +0x1a0 += 1/30 -> real dt",
+   "asm_original": "mov w8, #0x8889; movk w8, #0x3d08, lsl #16",
+   "asm_patched": "adrp x8, #0x4350000; ldr w8, [x8, #0xf10]"
+  },
+  {
+   "offset": "0x16832E4",
+   "original": "2811915208a1a772",
+   "patched": "686601b008114fb9",
+   "note": "FUN_710168300c: timer +0x198 += 1/30 (6.0 s threshold) -> real dt",
+   "asm_original": "mov w8, #0x8889; movk w8, #0x3d08, lsl #16",
+   "asm_patched": "adrp x8, #0x4350000; ldr w8, [x8, #0xf10]"
+  },
+  {
+   "offset": "0x16836D0",
+   "original": "2811915208a1a772",
+   "patched": "686601b008114fb9",
+   "note": "FUN_7101683528: timer +0x19c += 1/30 -> real dt",
+   "asm_original": "mov w8, #0x8889; movk w8, #0x3d08, lsl #16",
+   "asm_patched": "adrp x8, #0x4350000; ldr w8, [x8, #0xf10]"
+  },
+  {
+   "offset": "0x1982930",
+   "original": "2811915208a1a772",
+   "patched": "684e01d008114fb9",
+   "note": "vtable_7104139aa0::vf33: displacement = vel * k * 1/30 (see also 0x1982960) -> real dt",
+   "asm_original": "mov w8, #0x8889; movk w8, #0x3d08, lsl #16",
+   "asm_patched": "adrp x8, #0x4350000; ldr w8, [x8, #0xf10]"
+  },
+  {
+   "offset": "0x1982960",
+   "original": "08c2b712000d044e",
+   "patched": "684e01d000c9c33d",
+   "note": "vtable_7104139aa0::vf33: inverse of the step -> 1/dt (v0.4s)",
+   "asm_original": "mov w8, #0x41efffff; dup v0.4s, w8",
+   "asm_patched": "adrp x8, #0x4350000; ldr q0, [x8, #0xf20]"
+  },
+  {
+   "offset": "0x1983760",
+   "original": "2811915208a1a772",
+   "patched": "684e01b008114fb9",
+   "note": "FUN_7101983760: returns the fixed 1/30 step (5 movement callers) -> real dt",
+   "asm_original": "mov w8, #0x8889; movk w8, #0x3d08, lsl #16",
+   "asm_patched": "adrp x8, #0x4350000; ldr w8, [x8, #0xf10]"
+  },
+  {
+   "offset": "0x1984A70",
+   "original": "2811915208a1b772",
+   "patched": "684e019008154fb9",
+   "note": "vtable_7104139aa0::vf37: gravity v.y += g(+0xf8) * scale(+0xbe8) * -1/30 -> -dt",
+   "asm_original": "mov w8, #0x8889; movk w8, #0xbd08, lsl #16",
+   "asm_patched": "adrp x8, #0x4350000; ldr w8, [x8, #0xf14]"
+  },
+  {
+   "offset": "0x198DA8C",
+   "original": "2811915208a1b772",
+   "patched": "084e01f008154fb9",
+   "note": "vtable_7104139aa0::vf78: gravity * -1/30 -> -dt",
+   "asm_original": "mov w8, #0x8889; movk w8, #0xbd08, lsl #16",
+   "asm_patched": "adrp x8, #0x4350000; ldr w8, [x8, #0xf14]"
+  },
+  {
+   "offset": "0x198E020",
+   "original": "2811915208a1a772",
+   "patched": "084e01d008114fb9",
+   "note": "vtable_7104139aa0::vf78: velocity integration * 1/30 -> real dt",
+   "asm_original": "mov w8, #0x8889; movk w8, #0x3d08, lsl #16",
+   "asm_patched": "adrp x8, #0x4350000; ldr w8, [x8, #0xf10]"
+  },
+  {
+   "offset": "0x198EC6C",
+   "original": "2811915208a1a772",
+   "patched": "084e01d008114fb9",
+   "note": "vtable_7104139aa0::vf82: velocity integration * 1/30 -> real dt",
+   "asm_original": "mov w8, #0x8889; movk w8, #0x3d08, lsl #16",
+   "asm_patched": "adrp x8, #0x4350000; ldr w8, [x8, #0xf10]"
+  },
+  {
+   "offset": "0x1A0B3AC",
+   "original": "2811915208a1b772",
+   "patched": "284a01b008154fb9",
+   "note": "vtable_710413db48: timer +0x750 -= f * 1/30 -> -dt",
+   "asm_original": "mov w8, #0x8889; movk w8, #0xbd08, lsl #16",
+   "asm_patched": "adrp x8, #0x4350000; ldr w8, [x8, #0xf14]"
+  },
+  {
+   "offset": "0x1A0BAF0",
+   "original": "2811915208a1a772",
+   "patched": "284a01b008114fb9",
+   "note": "vtable_710413db48::vf84: pos += v * 1/30 -> real dt",
+   "asm_original": "mov w8, #0x8889; movk w8, #0x3d08, lsl #16",
+   "asm_patched": "adrp x8, #0x4350000; ldr w8, [x8, #0xf10]"
+  },
+  {
+   "offset": "0x1A0BEE4",
+   "original": "2811915208a1a772",
+   "patched": "284a01b008114fb9",
+   "note": "vtable_710413db48::vf84: v * 1/30 (vector) -> real dt",
+   "asm_original": "mov w8, #0x8889; movk w8, #0x3d08, lsl #16",
+   "asm_patched": "adrp x8, #0x4350000; ldr w8, [x8, #0xf10]"
+  },
+  {
+   "offset": "0x1A0DA20",
+   "original": "2811915208a1a772",
+   "patched": "084a01f008114fb9",
+   "note": "vtable_710413db48::vf35: displacement = v * 1/30 -> real dt",
+   "asm_original": "mov w8, #0x8889; movk w8, #0x3d08, lsl #16",
+   "asm_patched": "adrp x8, #0x4350000; ldr w8, [x8, #0xf10]"
+  },
+  {
+   "offset": "0x1A0EEA0",
+   "original": "2811915208a1a772",
+   "patched": "084a01d008114fb9",
+   "note": "vtable_710413db48::vf82: integration * 1/30 -> real dt",
+   "asm_original": "mov w8, #0x8889; movk w8, #0x3d08, lsl #16",
+   "asm_patched": "adrp x8, #0x4350000; ldr w8, [x8, #0xf10]"
+  },
+  {
+   "offset": "0x1A0F304",
+   "original": "2811915208a1a772",
+   "patched": "084a01b008114fb9",
+   "note": "vtable_710413db48::vf119: step = 1/30 (default value) -> real dt",
+   "asm_original": "mov w8, #0x8889; movk w8, #0x3d08, lsl #16",
+   "asm_patched": "adrp x8, #0x4350000; ldr w8, [x8, #0xf10]"
+  },
+  {
+   "offset": "0x1A0F498",
+   "original": "3611915216a1a772",
+   "patched": "164a01b0d6124fb9",
+   "note": "vtable_710413db48::vf119: step = 1/30 (w22) -> real dt",
+   "asm_original": "mov w22, #0x8889; movk w22, #0x3d08, lsl #16",
+   "asm_patched": "adrp x22, #0x4350000; ldr w22, [x22, #0xf10]"
+  },
+  {
+   "offset": "0x1A0F55C",
+   "original": "2811915208a1a772",
+   "patched": "084a01b008114fb9",
+   "note": "vtable_710413db48::vf119: step = 1/30 -> real dt",
+   "asm_original": "mov w8, #0x8889; movk w8, #0x3d08, lsl #16",
+   "asm_patched": "adrp x8, #0x4350000; ldr w8, [x8, #0xf10]"
+  },
+  {
+   "offset": "0x1A158C8",
+   "original": "2811915208a1b772",
+   "patched": "c84901f008154fb9",
+   "note": "vtable_710413db48: gravity v.y += g(+0xf8) * k * -1/30 -> -dt",
+   "asm_original": "mov w8, #0x8889; movk w8, #0xbd08, lsl #16",
+   "asm_patched": "adrp x8, #0x4350000; ldr w8, [x8, #0xf14]"
+  },
+  {
+   "offset": "0x1A17B10",
+   "original": "2811915208a1a772",
+   "patched": "c84901b008114fb9",
+   "note": "vtable_710413db48::vf70: pos += v * 1/30 -> real dt",
+   "asm_original": "mov w8, #0x8889; movk w8, #0x3d08, lsl #16",
+   "asm_patched": "adrp x8, #0x4350000; ldr w8, [x8, #0xf10]"
+  },
+  {
+   "offset": "0x1A17F3C",
+   "original": "2811915208a1a772",
+   "patched": "c84901b008114fb9",
+   "note": "vtable_710413db48::vf70: pos += v * 1/30 -> real dt",
+   "asm_original": "mov w8, #0x8889; movk w8, #0x3d08, lsl #16",
+   "asm_patched": "adrp x8, #0x4350000; ldr w8, [x8, #0xf10]"
+  },
+  {
+   "offset": "0x1A19104",
+   "original": "2811915208a1a772",
+   "patched": "a84901f008114fb9",
+   "note": "vtable_710413db48::vf70: FUN_7101727df4(dt=1/30, ...) -> real dt",
+   "asm_original": "mov w8, #0x8889; movk w8, #0x3d08, lsl #16",
+   "asm_patched": "adrp x8, #0x4350000; ldr w8, [x8, #0xf10]"
+  },
+  {
+   "offset": "0x1A196C4",
+   "original": "2811915208a1a772",
+   "patched": "a84901f008114fb9",
+   "note": "FUN_7101a19654: FUN_7101727df4(dt=1/30, ...) -> real dt",
+   "asm_original": "mov w8, #0x8889; movk w8, #0x3d08, lsl #16",
+   "asm_patched": "adrp x8, #0x4350000; ldr w8, [x8, #0xf10]"
+  },
+  {
+   "offset": "0x1A71A6C",
+   "original": "00d0271e2118201e",
+   "patched": "65cf60941f2003d5",
+   "note": "vtable_7104137528::vf17: +0x618 += f / 30 (s1 = s1 / s0) -> * dt (bl to the cave)",
+   "asm_original": "fmov s0, #30.00000000; fdiv s1, s1, s0",
+   "asm_patched": "bl #0x32a5800; nop"
+  },
+  {
+   "offset": "0x1A71ABC",
+   "original": "01d0271e4418211e",
+   "patched": "55cf60941f2003d5",
+   "note": "vtable_7104137528::vf17: +0x618 += f / 30 (s4 = s2 / s1) -> * dt (bl to the cave)",
+   "asm_original": "fmov s1, #30.00000000; fdiv s4, s2, s1",
+   "asm_patched": "bl #0x32a5810; nop"
+  },
+  {
+   "offset": "0x1AAB5A4",
+   "original": "2811915208a1b772",
+   "patched": "284501b008154fb9",
+   "note": "FUN_7101aab*: timer +0x50 -= 1/30 -> -dt",
+   "asm_original": "mov w8, #0x8889; movk w8, #0xbd08, lsl #16",
+   "asm_patched": "adrp x8, #0x4350000; ldr w8, [x8, #0xf14]"
+  },
+  {
+   "offset": "0x1AAB5D4",
+   "original": "2811915208a1b772",
+   "patched": "284501b008154fb9",
+   "note": "FUN_7101aab*: timer +0x54 -= 1/30 -> -dt",
+   "asm_original": "mov w8, #0x8889; movk w8, #0xbd08, lsl #16",
+   "asm_patched": "adrp x8, #0x4350000; ldr w8, [x8, #0xf14]"
+  },
+  {
+   "offset": "0x1B47F5C",
+   "original": "2811915208a1b772",
+   "patched": "484001b008154fb9",
+   "note": "vtable_710414bc28::vf18: timer [x21] -= f * 1/30 -> -dt",
+   "asm_original": "mov w8, #0x8889; movk w8, #0xbd08, lsl #16",
+   "asm_patched": "adrp x8, #0x4350000; ldr w8, [x8, #0xf14]"
+  },
+  {
+   "offset": "0x1B47F94",
+   "original": "2811915208a1b772",
+   "patched": "484001b008154fb9",
+   "note": "vtable_710414bc28::vf18: timer +0x250 -= f * 1/30 -> -dt",
+   "asm_original": "mov w8, #0x8889; movk w8, #0xbd08, lsl #16",
+   "asm_patched": "adrp x8, #0x4350000; ldr w8, [x8, #0xf14]"
+  },
+  {
+   "offset": "0x1B47FCC",
+   "original": "2811915208a1b772",
+   "patched": "484001b008154fb9",
+   "note": "vtable_710414bc28::vf18: timer +0x254 -= f * 1/30 -> -dt",
+   "asm_original": "mov w8, #0x8889; movk w8, #0xbd08, lsl #16",
+   "asm_patched": "adrp x8, #0x4350000; ldr w8, [x8, #0xf14]"
+  },
+  {
+   "offset": "0x1B48A48",
+   "original": "2811915208a1a772",
+   "patched": "4840019008114fb9",
+   "note": "vtable_710414bc28::vf18: timer +0x254 += f * 1/30 -> real dt",
+   "asm_original": "mov w8, #0x8889; movk w8, #0x3d08, lsl #16",
+   "asm_patched": "adrp x8, #0x4350000; ldr w8, [x8, #0xf10]"
+  },
+  {
+   "offset": "0x1B48A94",
+   "original": "2811915208a1a772",
+   "patched": "4840019008114fb9",
+   "note": "vtable_710414bc28::vf18: timer +0x24c += f * 1/30 -> real dt",
+   "asm_original": "mov w8, #0x8889; movk w8, #0x3d08, lsl #16",
+   "asm_patched": "adrp x8, #0x4350000; ldr w8, [x8, #0xf10]"
+  },
+  {
+   "offset": "0x1B49004",
+   "original": "2811915208a1a772",
+   "patched": "284001f008114fb9",
+   "note": "vtable_710414bc28::vf18: timer +0x24c += f * 1/30 -> real dt",
+   "asm_original": "mov w8, #0x8889; movk w8, #0x3d08, lsl #16",
+   "asm_patched": "adrp x8, #0x4350000; ldr w8, [x8, #0xf10]"
+  },
+  {
+   "offset": "0x1B493F4",
+   "original": "2811915208a1a772",
+   "patched": "284001f008114fb9",
+   "note": "vtable_710414bc28::vf18: timer +0x250 += f * 1/30 -> real dt",
+   "asm_original": "mov w8, #0x8889; movk w8, #0x3d08, lsl #16",
+   "asm_patched": "adrp x8, #0x4350000; ldr w8, [x8, #0xf10]"
+  },
+  {
+   "offset": "0x1D1B7CC",
+   "original": "2811915208a1a772",
+   "patched": "a83101b008114fb9",
+   "note": "vtable_7104152798::vf9: prediction pos + v * 1/30 -> real dt",
+   "asm_original": "mov w8, #0x8889; movk w8, #0x3d08, lsl #16",
+   "asm_patched": "adrp x8, #0x4350000; ldr w8, [x8, #0xf10]"
+  },
+  {
+   "offset": "0x1D5D684",
+   "original": "2811915208a1a772",
+   "patched": "882f01f008114fb9",
+   "note": "FUN_7101d5d59c: FUN_71024ac8c4(1/30, ...) (minute counter) -> real dt",
+   "asm_original": "mov w8, #0x8889; movk w8, #0x3d08, lsl #16",
+   "asm_patched": "adrp x8, #0x4350000; ldr w8, [x8, #0xf10]"
+  },
+  {
+   "offset": "0x1D5D850",
+   "original": "0800a4d22822c2f228f4e7f20001679e",
+   "patched": "882f01f000114fbd00c0221e1f2003d5",
+   "note": "FUN_7101d5d59c: FUN_7102a1a728((double)dt, obj, 1)",
+   "asm_original": "mov x8, #0x20000000; movk x8, #0x1111, lsl #32; movk x8, #0x3fa1, lsl #48; fmov d0, x8",
+   "asm_patched": "adrp x8, #0x4350000; ldr s0, [x8, #0xf10]; fcvt d0, s0; nop"
+  },
+  {
+   "offset": "0x1D5D86C",
+   "original": "0800a4d22822c2f228f4e7f20001679e",
+   "patched": "882f01f000114fbd00c0221e1f2003d5",
+   "note": "FUN_7101d5d59c: FUN_7102a1a728((double)dt, obj, 1)",
+   "asm_original": "mov x8, #0x20000000; movk x8, #0x1111, lsl #32; movk x8, #0x3fa1, lsl #48; fmov d0, x8",
+   "asm_patched": "adrp x8, #0x4350000; ldr s0, [x8, #0xf10]; fcvt d0, s0; nop"
+  },
+  {
+   "offset": "0x1D5D888",
+   "original": "0800a4d22822c2f228f4e7f20001679e",
+   "patched": "882f01f000114fbd00c0221e1f2003d5",
+   "note": "FUN_7101d5d59c: FUN_7102a1a728((double)dt, obj, 1)",
+   "asm_original": "mov x8, #0x20000000; movk x8, #0x1111, lsl #32; movk x8, #0x3fa1, lsl #48; fmov d0, x8",
+   "asm_patched": "adrp x8, #0x4350000; ldr s0, [x8, #0xf10]; fcvt d0, s0; nop"
+  },
+  {
+   "offset": "0x257AC30",
+   "original": "2811915208a1a772",
+   "patched": "a8ee00d008114fb9",
+   "note": "vtable_71041629a8::vf119: FUN_7101713904(f * k * 1/30) -> real dt",
+   "asm_original": "mov w8, #0x8889; movk w8, #0x3d08, lsl #16",
+   "asm_patched": "adrp x8, #0x4350000; ldr w8, [x8, #0xf10]"
+  },
+  {
+   "offset": "0x257C9F4",
+   "original": "2811915208a1a772",
+   "patched": "a8ee009008114fb9",
+   "note": "vtable_71041629a8::vf84: pos += v * 1/30 -> real dt",
+   "asm_original": "mov w8, #0x8889; movk w8, #0x3d08, lsl #16",
+   "asm_patched": "adrp x8, #0x4350000; ldr w8, [x8, #0xf10]"
+  },
+  {
+   "offset": "0x257CE38",
+   "original": "2811915208a1a772",
+   "patched": "a8ee009008114fb9",
+   "note": "vtable_71041629a8::vf84: v * 1/30 (vector) -> real dt",
+   "asm_original": "mov w8, #0x8889; movk w8, #0x3d08, lsl #16",
+   "asm_patched": "adrp x8, #0x4350000; ldr w8, [x8, #0xf10]"
+  },
+  {
+   "offset": "0x25AC3D8",
+   "original": "2811915208a1b772",
+   "patched": "28ed009008154fb9",
+   "note": "ride controller: gravity * -1/30 (mount jumps) -> -dt",
+   "asm_original": "mov w8, #0x8889; movk w8, #0xbd08, lsl #16",
+   "asm_patched": "adrp x8, #0x4350000; ldr w8, [x8, #0xf14]"
+  },
+  {
+   "offset": "0x2783048",
+   "original": "c88f00f0",
+   "patched": "ae892c14",
+   "note": "vtable_7104171528::vf1: jump to the cave (the game clocks take the real time)",
+   "asm_original": "adrp x8, #0x397e000",
+   "asm_patched": "b #0x32a5700"
+  },
+  {
+   "offset": "0x2795230",
+   "original": "2811915208a1a772",
+   "patched": "c8dd00f008114fb9",
+   "note": "FUN_7102795204: fixed dt 1/30 unless flag +0x150 -> real dt",
+   "asm_original": "mov w8, #0x8889; movk w8, #0x3d08, lsl #16",
+   "asm_patched": "adrp x8, #0x4350000; ldr w8, [x8, #0xf10]"
+  },
+  {
+   "offset": "0x29C17FC",
+   "original": "0101271e",
+   "patched": "0f902394",
+   "note": "sky vf7: s1 = -300 (+0x5dc += speed / -300 per frame) -> -10/dt (bl to the cave)",
+   "asm_original": "fmov s1, w8",
+   "asm_patched": "bl #0x32a5838"
+  },
+  {
+   "offset": "0x29C1930",
+   "original": "0101271e",
+   "patched": "c58f2394",
+   "note": "sky vf7: s1 = -300 (+0x614 += speed / -300 per frame) -> -10/dt (bl to the cave)",
+   "asm_original": "fmov s1, w8",
+   "asm_patched": "bl #0x32a5844"
+  },
+  {
+   "offset": "0x29C1FA4",
+   "original": "0bd0271e",
+   "patched": "1f8e2394",
+   "note": "sky vf7: s11 = 30 (divisor of the cloud UV scroll +0x608/+0x60c/+0x610) -> 1/dt (bl to the cave)",
+   "asm_original": "fmov s11, #30.00000000",
+   "asm_patched": "bl #0x32a5820"
+  },
+  {
+   "offset": "0x29C2990",
+   "original": "02d0271e",
+   "patched": "a78b2394",
+   "note": "sky vf7: s2 = 30 (k * 30, divisor of the +0x64c offset) -> 1/dt (bl to the cave)",
+   "asm_original": "fmov s2, #30.00000000",
+   "asm_patched": "bl #0x32a582c"
+  },
+  {
+   "offset": "0x29FAF8C",
+   "original": "2811915208a1a772",
+   "patched": "a8ca00d008114fb9",
+   "note": "vtable_7104183390::vf17: time accumulator += 1/30 (wraps at 10000) -> real dt",
+   "asm_original": "mov w8, #0x8889; movk w8, #0x3d08, lsl #16",
+   "asm_patched": "adrp x8, #0x4350000; ldr w8, [x8, #0xf10]"
+  },
+  {
+   "offset": "0x2AA278C",
+   "original": "01050011",
+   "patched": "21008052",
+   "note": "nvnWindowSetPresentInterval(win, 1) instead of cfg+1 (=2)",
+   "asm_original": "add w1, w8, #1",
+   "asm_patched": "mov w1, #1"
+  },
+  {
+   "offset": "0x2AF25F4",
+   "original": "2811915208a1a772",
+   "patched": "e8c200d008114fb9",
+   "note": "FUN_7102af25b4: fixed dt 1/30 unless flag +0x121 -> real dt",
+   "asm_original": "mov w8, #0x8889; movk w8, #0x3d08, lsl #16",
+   "asm_patched": "adrp x8, #0x4350000; ldr w8, [x8, #0xf10]"
+  },
+  {
+   "offset": "0x32A5700",
+   "original": "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+   "patched": "5f0400712106005401050035fd7bbea9fd030091e00701a942f6ff97498500f029013c912a0140f9200100f9aa0100b40a000acb2b4e80d24a7d0b9b8b0180d24a09cb9aeb0400585f010beb6a318a9acb0400585f010beb6a818a9a020000148a0400582a0500f95001639e7104005c100a711e1042621e301100bd1142211e311500bd11102e1e311a301e1090341e100a311e301d00bd3106044e3109803de00741a9fd7bc2a8498500f029013c91220540f9420000b5c2010058080040f9030940f960001fd6c83600b00841239102d962f8080040f9030940f960001fd640420f0000000000ab40f903000000002b50fe000000000095d626e80b2e113e",
+   "note": "cave: dynamic vf1. Measures the frame with nn::os::GetSystemTick, clamps it to [1/1000, 1/15] s and stores frame_ns, dt and 1/dt in .bss+0x4350F00",
+   "region": "cave",
+   "asm_original": "(padding)",
+   "asm_patched": "cmp w2, #1; b.ne #0x32a57c8; cbnz w1, #0x32a57a8; stp x29, x30, [sp, #-0x20]!; mov x29, sp; stp x0, x1, [sp, #0x10]; bl #0x32a3020; adrp x9, #0x4350000; add x9, x9, #0xf00; ldr x10, [x9]; str x0, [x9]; cbz x10, #0x32a5760; sub x10, x0, x10; mov x11, #0x271; mul x10, x10, x11; mov x11, #0xc; udiv x10, x10, x11; ldr x11, #0x32a57e0; cmp x10, x11; csel x10, x11, x10, lo; ldr x11, #0x32a57e8; cmp x10, x11; csel x10, x11, x10, hi; b #0x32a5764; ldr x10, #0x32a57f0; str x10, [x9, #8]; ucvtf d16, x10; ldr d17, #0x32a57f8; fmul d16, d16, d17; fcvt s16, d16; str s16, [x9, #0x10]; fneg s17, s16; str s17, [x9, #0x14]; fmov s17, #1.00000000; fdiv s17, s17, s16; fmov s16, #-10.00000000; fmul s16, s16, s17; str s16, [x9, #0x1c]; dup v17.4s, v17.s[0]; str q17, [x9, #0x20]; ldp x0, x1, [sp, #0x10]; ldp x29, x30, [sp], #0x20; adrp x9, #0x4350000; add x9, x9, #0xf00; ldr x2, [x9, #8]; cbnz x2, #0x32a57bc; ldr x2, #0x32a57f0; ldr x8, [x0]; ldr x3, [x8, #0x10]; br x3; adrp x8, #0x397e000; add x8, x8, #0x8d0; ldr x2, [x8, w2, sxtw #3]; ldr x8, [x0]; ldr x3, [x8, #0x10]; br x3; .word 0x000f4240; udf #0; .word 0x03f940ab; udf #0; .word 0x00fe502b; udf #0; .word 0xe826d695; .word 0x3e112e0b"
+  },
+  {
+   "offset": "0x32A5800",
+   "original": "00000000000000000000000000000000",
+   "patched": "488500f000114fbd2108201ec0035fd6",
+   "note": "cave: s1 = s1 * dt (for 0x1a71a6c; uses x8, free there)",
+   "region": "cave",
+   "asm_original": "(padding)",
+   "asm_patched": "adrp x8, #0x4350000; ldr s0, [x8, #0xf10]; fmul s1, s1, s0; ret"
+  },
+  {
+   "offset": "0x32A5810",
+   "original": "00000000000000000000000000000000",
+   "patched": "488500f001114fbd4408211ec0035fd6",
+   "note": "cave: s4 = s2 * dt (for 0x1a71abc; uses x8, free there)",
+   "region": "cave",
+   "asm_original": "(padding)",
+   "asm_patched": "adrp x8, #0x4350000; ldr s1, [x8, #0xf10]; fmul s4, s2, s1; ret"
+  },
+  {
+   "offset": "0x32A5820",
+   "original": "000000000000000000000000",
+   "patched": "508500f00b224fbdc0035fd6",
+   "note": "cave: s11 = 1/dt (for 0x29c1fa4; uses x16)",
+   "region": "cave",
+   "asm_original": "(padding)",
+   "asm_patched": "adrp x16, #0x4350000; ldr s11, [x16, #0xf20]; ret"
+  },
+  {
+   "offset": "0x32A582C",
+   "original": "000000000000000000000000",
+   "patched": "508500f002224fbdc0035fd6",
+   "note": "cave: s2 = 1/dt (for 0x29c2990; uses x16)",
+   "region": "cave",
+   "asm_original": "(padding)",
+   "asm_patched": "adrp x16, #0x4350000; ldr s2, [x16, #0xf20]; ret"
+  },
+  {
+   "offset": "0x32A5838",
+   "original": "000000000000000000000000",
+   "patched": "508500f0011e4fbdc0035fd6",
+   "note": "cave: s1 = -10/dt (for 0x29c17fc; uses x16)",
+   "region": "cave",
+   "asm_original": "(padding)",
+   "asm_patched": "adrp x16, #0x4350000; ldr s1, [x16, #0xf1c]; ret"
+  },
+  {
+   "offset": "0x32A5844",
+   "original": "000000000000000000000000",
+   "patched": "508500f0011e4fbdc0035fd6",
+   "note": "cave: s1 = -10/dt (for 0x29c1930; uses x16)",
+   "region": "cave",
+   "asm_original": "(padding)",
+   "asm_patched": "adrp x16, #0x4350000; ldr s1, [x16, #0xf1c]; ret"
+  }
+ ]
+}

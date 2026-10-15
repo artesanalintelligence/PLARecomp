@@ -1,0 +1,32 @@
+// In-game menu: background blur (nvnvk). Two modes with the same layout as the final pass:
+//   OV_DOWN:   downscale to 1/4 (4 bilinear reads = 4x4 source texel box).
+//   otherwise: separable 9-texel gaussian with 5 bilinear reads (direction in the push constant).
+// glslangValidator -V -DOV_DOWN --vn kOvDownSpv -o ovdown.comp.inc ovblur.comp
+// glslangValidator -V --vn kOvBlurSpv -o ovblur.comp.inc ovblur.comp
+#version 450
+layout(local_size_x = 8, local_size_y = 8) in;
+layout(set = 0, binding = 0) uniform sampler2D src;
+layout(set = 0, binding = 1, rgba16f) uniform writeonly image2D dst;
+layout(push_constant) uniform Pc {
+    ivec2 size;  // destination
+    ivec2 dir;   // gaussian: (1,0) or (0,1)
+} pc;
+
+void main() {
+    const ivec2 p = ivec2(gl_GlobalInvocationID.xy);
+    if (p.x >= pc.size.x || p.y >= pc.size.y) return;
+    const vec2 texel = 1.0 / vec2(pc.size);
+    const vec2 uv = (vec2(p) + 0.5) * texel;
+#ifdef OV_DOWN
+    const vec2 o = texel * 0.25;
+    vec3 c = texture(src, uv + vec2(-o.x, -o.y)).rgb + texture(src, uv + vec2(o.x, -o.y)).rgb +
+             texture(src, uv + vec2(-o.x, o.y)).rgb + texture(src, uv + vec2(o.x, o.y)).rgb;
+    imageStore(dst, p, vec4(c * 0.25, 1.0));
+#else
+    const vec2 d = vec2(pc.dir) * texel;
+    vec3 c = texture(src, uv).rgb * 0.2270270270;
+    c += (texture(src, uv + d * 1.3846153846).rgb + texture(src, uv - d * 1.3846153846).rgb) * 0.3162162162;
+    c += (texture(src, uv + d * 3.2307692308).rgb + texture(src, uv - d * 3.2307692308).rgb) * 0.0702702703;
+    imageStore(dst, p, vec4(c, 1.0));
+#endif
+}

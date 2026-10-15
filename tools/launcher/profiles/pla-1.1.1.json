@@ -1,0 +1,151 @@
+{
+  "_comment": "Launcher game profile (the PLA-SPECIFIC part; the launcher itself is generic). It only holds identifiers, hashes and build ids of the official executable (the same as data/target.json, which is already versioned), repo paths and options. Never keys, binaries or generated C.",
+  "id": "pla-1.1.1",
+  "game": "PLA (title 01001F5010DFA000)",
+  "title_id": "01001F5010DFA000",
+  "update_title_id": "01001F5010DFA800",
+  "version": {
+    "display": "1.1.1",
+    "number": 262144
+  },
+  "expected_exefs": {
+    "main": {
+      "sha256": "89fa2d715e13a1c311a47ee02b3cc858ccf72a2086ab9704a08a2ddc1b90f7d9",
+      "build_id": "AEE8F150DDA1B5A838806E1A5EA6827AD9F3C51E"
+    },
+    "main.npdm": {
+      "sha256": "67dba1b1835504bf78c584fb97a6a787528664d6eb407fea0e9bec5b60e26923"
+    },
+    "rtld": {
+      "sha256": "bc175ad9865adb48f9cbe9d7993ddb3367d3771bc06642c87d16ccf4f4dc9ff4",
+      "build_id": "6F8B1226CC8CD958021D6BFD226EBF23F892AB9B"
+    },
+    "sdk": {
+      "sha256": "85aaf84172367499c02cbb5c317c419b9c768658f5a44de743da40d4c6441a4b",
+      "build_id": "B39ADD63421BE525D352E576DAB438D3812EFDF0"
+    },
+    "subsdk0": {
+      "sha256": "773153d0734c8feaacd5a1e6b21bd1ede8c060a142f9d91452897776f31d9827",
+      "build_id": "535249A546887CAC875A099E9C8EF367077CF58B"
+    },
+    "subsdk1": {
+      "sha256": "c0a7a238688caf191c7c40badcbeac4d037a95ccaed644ce7fe2e63b5f898a13",
+      "build_id": "4DD097B435891C5E0E15A65DBE47124F4D7FD1C1"
+    }
+  },
+  "baked_patches": [
+    {
+      "id": "unlocked-fps",
+      "json": "recomp/patches/unlocked-fps/pla-111-unlocked-fps.json",
+      "expected": 43,
+      "note": "Unlocked FPS with dynamic delta (43 changes; grows .text 0x32A5690 -> 0x32A5900 for the code cave)"
+    }
+  ],
+  "roots": {
+    "module": "main",
+    "text_size": "0x32a5690",
+    "sources": "eh_frame, vtables, relocs, jump tables, landing pads (tools/analysis/code_targets.py)"
+  },
+  "emitter": {
+    "backend": "hybrid",
+    "shl_imm": true,
+    "env": {
+      "SUYU_AOT_FPX": "1",
+      "SUYU_AOT_CHAIN": "1",
+      "SUYU_AOT_FPXV": "1",
+      "SUYU_AOT_FPXFZ": "1",
+      "SUYU_AOT_FPXOOL": "1",
+      "SUYU_AOT_IDXMISS": "1",
+      "SUYU_AOT_XCHAIN": "1",
+      "SUYU_AOT_FM2": "1",
+      "SUYU_AOT_EXCLINLINE": "1",
+      "SUYU_AOT_FPXIX": "1"
+    },
+    "note": "PROGRESS-PERF flags (recipe of the dist xc DLLs; subsdk0/1 also get FPXOOL here). The exporter ignores options it does not know: launcher.py checks them in aot_manifest.json after the export (verify_emitter)."
+  },
+  "modules": {
+    "main": {
+      "dll": "recompiled_image.dll",
+      "c_mb": 3840,
+      "dll_mb": 1490,
+      "min": 45,
+      "min_split": 11
+    },
+    "sdk": {
+      "dll": "recompiled_sdk.dll",
+      "c_mb": 377,
+      "dll_mb": 145,
+      "min": 4.5,
+      "min_split": 0.8
+    },
+    "subsdk0": {
+      "dll": "recompiled_subsdk0.dll",
+      "c_mb": 221,
+      "dll_mb": 88,
+      "min": 2.5,
+      "min_split": 0.4
+    },
+    "subsdk1": {
+      "dll": "recompiled_subsdk1.dll",
+      "c_mb": 374,
+      "dll_mb": 144,
+      "min": 4.6,
+      "min_split": 0.7
+    },
+    "rtld": {
+      "dll": "recompiled_rtld.dll",
+      "c_mb": 1,
+      "dll_mb": 1,
+      "min": 0.1,
+      "min_split": 0.05
+    }
+  },
+  "romfs": {
+    "gb": 6.1,
+    "files": 19095
+  },
+  "dist": {
+    "exe": "PLA.exe",
+    "exe_args_play": "",
+    "_exe_args_note": "PLA.exe (plahost, docs/port/HOST.md) needs no arguments or environment: mods\\ next to the exe, nvnvk and nnshim always loaded. Shortcuts and the installer's Play start PLA.exe as is.",
+    "icon_from_dump": true,
+    "ini": "PLA.ini",
+    "_ini_values_note": "The PLA.ini keys plahost reads (fullscreen, mods, nvnvk_fps_cap, hang_report; also name, memory_mib, window_width/height). The in-game menu (nvnvk) writes fullscreen and nvnvk_fps_cap; a re-assembly keeps those (launcher.py INI_MENU_KEYS).",
+    "ini_values": {
+      "fullscreen": 0,
+      "mods": 1,
+      "nvnvk_fps_cap": 0,
+      "hang_report": 30
+    },
+    "mods_recomp": [
+      "research_level_fix",
+      "engine_options",
+      "render_res"
+    ],
+    "mods_local": [
+      "islands"
+    ],
+    "_mods_local_note": "generated from the user's main.elf and compiled at install time with the portable toolchain (tools/islands/build_islands.py): they contain lifted game code, so they are never shipped prebuilt.",
+    "_mods_recomp_note": "engine_options and render_res are the option mods the in-game menu (nvnvk) drives; shipped prebuilt with their default (neutral) config.",
+    "mods_platform": [
+      {
+        "id": "nnshim",
+        "dll": "nnshim.dll",
+        "extra": [
+          "SDL2.dll"
+        ],
+        "_extra_note": "official SDL2 (zlib); looked up in build/port/<id>, the fork and the NuGet cache (ultz.native.sdl)",
+        "mod_json": "nnshim_template",
+        "note": "native fs/hid/saves; romfs and saves inside the game folder"
+      },
+      {
+        "id": "nvnvk",
+        "dll": "nvnvk.dll",
+        "mod_json": "template",
+        "mode": "exclusive",
+        "_mod_json_note": "template = build/port/nvnvk/mod.template.json (hooks generated at release time by gen_tables.py); the launcher fills the config",
+        "note": "own renderer (PLA.exe default, renderer=nvnvk)"
+      }
+    ]
+  }
+}

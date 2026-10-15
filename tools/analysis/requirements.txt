@@ -1,0 +1,6 @@
+pyelftools>=0.31
+capstone>=5.0
+numpy>=1.24
+pytest>=7
+# Optional: pure-Python demangler if c++filt (devkitA64/LLVM) is not on the system
+itanium_demangler>=1.1

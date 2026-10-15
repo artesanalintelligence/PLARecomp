@@ -1,0 +1,896 @@
+{
+ "id": "os_profile",
+ "name": "nn::os call profile (v1.5 measurement)",
+ "version": "1.0.0",
+ "title_id": "01001F5010DFA000",
+ "build_id": "AEE8F150DDA1B5A838806E1A5EA6827AD9F3C51E",
+ "library": "os_profile.dll",
+ "enabled": true,
+ "hooks": [
+  {
+   "module": "main",
+   "offset": "0x32a4030",
+   "pre": "count_pre",
+   "comment": "_ZN2nn2os10ClearEventEPNS0_9EventTypeE"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a3fb0",
+   "pre": "count_pre",
+   "comment": "_ZN2nn2os10TryWaitAnyEPNS0_13MultiWaitTypeE"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a35a0",
+   "pre": "count_pre",
+   "comment": "_ZN2nn2os10WaitThreadEPNS0_10ThreadTypeE"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a38a0",
+   "pre": "count_pre",
+   "comment": "_ZN2nn2os11FreeTlsSlotENS0_7TlsSlotE"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a4d20",
+   "pre": "count_pre",
+   "comment": "_ZN2nn2os11GetHostArgcEv"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a4d30",
+   "pre": "count_pre",
+   "comment": "_ZN2nn2os11GetHostArgvEv"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a3c40",
+   "pre": "count_pre",
+   "comment": "_ZN2nn2os11GetThreadIdEPKNS0_10ThreadTypeE"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a3880",
+   "pre": "count_pre",
+   "comment": "_ZN2nn2os11GetTlsValueENS0_7TlsSlotE"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a3890",
+   "pre": "count_pre",
+   "comment": "_ZN2nn2os11SetTlsValueENS0_7TlsSlotEm"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a3270",
+   "pre": "count_pre",
+   "comment": "_ZN2nn2os11SignalEventEPNS0_9EventTypeE"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a35e0",
+   "pre": "count_pre",
+   "comment": "_ZN2nn2os11SleepThreadENS_8TimeSpanE"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a3590",
+   "pre": "count_pre",
+   "comment": "_ZN2nn2os11StartThreadEPNS0_10ThreadTypeE"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a3100",
+   "pre": "count_pre",
+   "comment": "_ZN2nn2os11UnlockMutexEPNS0_9MutexTypeE"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a35d0",
+   "pre": "count_pre",
+   "comment": "_ZN2nn2os11YieldThreadEv"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a3540",
+   "pre": "count_pre",
+   "comment": "_ZN2nn2os12CreateThreadEPNS0_10ThreadTypeEPFvPvES3_S3_mi"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a3530",
+   "pre": "count_pre",
+   "comment": "_ZN2nn2os12CreateThreadEPNS0_10ThreadTypeEPFvPvES3_S3_mii"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a4010",
+   "pre": "count_pre",
+   "comment": "_ZN2nn2os12SdkMutexType10InitializeEv"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a3ff0",
+   "pre": "count_pre",
+   "comment": "_ZN2nn2os12SdkMutexType4LockEv"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a4000",
+   "pre": "count_pre",
+   "comment": "_ZN2nn2os12SdkMutexType6UnlockEv"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a4020",
+   "pre": "count_pre",
+   "comment": "_ZN2nn2os12TryLockMutexEPNS0_9MutexTypeE"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a3240",
+   "pre": "count_pre",
+   "comment": "_ZN2nn2os12TryWaitEventEPNS0_9EventTypeE"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a3580",
+   "pre": "count_pre",
+   "comment": "_ZN2nn2os13DestroyThreadEPNS0_10ThreadTypeE"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a3210",
+   "pre": "count_pre",
+   "comment": "_ZN2nn2os13FinalizeEventEPNS0_9EventTypeE"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a3f10",
+   "pre": "count_pre",
+   "comment": "_ZN2nn2os13FinalizeFiberEPNS0_9FiberTypeE"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a30e0",
+   "pre": "count_pre",
+   "comment": "_ZN2nn2os13FinalizeMutexEPNS0_9MutexTypeE"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a3020",
+   "pre": "count_pre",
+   "comment": "_ZN2nn2os13GetSystemTickEv"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a3570",
+   "pre": "count_pre",
+   "comment": "_ZN2nn2os13SetThreadNameEPNS0_10ThreadTypeEPKc"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a3f30",
+   "pre": "count_pre",
+   "comment": "_ZN2nn2os13SwitchToFiberEPNS0_9FiberTypeE"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a5190",
+   "pre": "count_pre",
+   "comment": "_ZN2nn2os14StopTimerEventEPNS0_14TimerEventTypeE"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a3250",
+   "pre": "count_pre",
+   "comment": "_ZN2nn2os14TimedWaitEventEPNS0_9EventTypeENS_8TimeSpanE"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a4540",
+   "pre": "count_pre",
+   "comment": "_ZN2nn2os14WaitLightEventEPNS0_14LightEventTypeE"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a5170",
+   "pre": "count_pre",
+   "comment": "_ZN2nn2os14WaitTimerEventEPNS0_14TimerEventTypeE"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a3870",
+   "pre": "count_pre",
+   "comment": "_ZN2nn2os15AllocateTlsSlotEPNS0_7TlsSlotEPFvmE"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a3f20",
+   "pre": "count_pre",
+   "comment": "_ZN2nn2os15GetCurrentFiberEv"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a31b0",
+   "pre": "count_pre",
+   "comment": "_ZN2nn2os15InitializeEventEPNS0_9EventTypeEbNS0_14EventClearModeE"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a3f00",
+   "pre": "count_pre",
+   "comment": "_ZN2nn2os15InitializeFiberEPNS0_9FiberTypeEPFS2_PvES3_S3_mi"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a3110",
+   "pre": "count_pre",
+   "comment": "_ZN2nn2os15InitializeMutexEPNS0_9MutexTypeEbi"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a4470",
+   "pre": "count_pre",
+   "comment": "_ZN2nn2os15JamMessageQueueEPNS0_16MessageQueueTypeEm"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a4ce0",
+   "pre": "count_pre",
+   "comment": "_ZN2nn2os15QueryMemoryInfoEPNS0_10MemoryInfoE"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a4480",
+   "pre": "count_pre",
+   "comment": "_ZN2nn2os15WaitSystemEventEPNS0_15SystemEventTypeE"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a3ca0",
+   "pre": "count_pre",
+   "comment": "_ZN2nn2os16AcquireSemaphoreEPNS0_13SemaphoreTypeE"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a4860",
+   "pre": "count_pre",
+   "comment": "_ZN2nn2os16ClearSystemEventEPNS0_15SystemEventTypeE"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a3c30",
+   "pre": "count_pre",
+   "comment": "_ZN2nn2os16GetCurrentThreadEv"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a3cb0",
+   "pre": "count_pre",
+   "comment": "_ZN2nn2os16ReleaseSemaphoreEPNS0_13SemaphoreTypeE"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a5680",
+   "pre": "count_pre",
+   "comment": "_ZN2nn2os16ReleaseSemaphoreEPNS0_13SemaphoreTypeEi"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a4430",
+   "pre": "count_pre",
+   "comment": "_ZN2nn2os16SendMessageQueueEPNS0_16MessageQueueTypeEm"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a4550",
+   "pre": "count_pre",
+   "comment": "_ZN2nn2os16SignalLightEventEPNS0_14LightEventTypeE"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a3480",
+   "pre": "count_pre",
+   "comment": "_ZN2nn2os17ConvertToTimeSpanENS0_4TickE"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a3f70",
+   "pre": "count_pre",
+   "comment": "_ZN2nn2os17FinalizeMultiWaitEPNS0_13MultiWaitTypeE"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a3c90",
+   "pre": "count_pre",
+   "comment": "_ZN2nn2os17FinalizeSemaphoreEPNS0_13SemaphoreTypeE"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a43e0",
+   "pre": "count_pre",
+   "comment": "_ZN2nn2os17GetThreadPriorityEPKNS0_10ThreadTypeE"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a4cf0",
+   "pre": "count_pre",
+   "comment": "_ZN2nn2os17SetMemoryHeapSizeEm"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a3550",
+   "pre": "count_pre",
+   "comment": "_ZN2nn2os17SetThreadCoreMaskEPNS0_10ThreadTypeEim"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a3d30",
+   "pre": "count_pre",
+   "comment": "_ZN2nn2os18DestroySystemEventEPNS0_15SystemEventTypeE"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a4610",
+   "pre": "count_pre",
+   "comment": "_ZN2nn2os18FinalizeLightEventEPNS0_14LightEventTypeE"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a3c70",
+   "pre": "count_pre",
+   "comment": "_ZN2nn2os18FinalizeTimerEventEPNS0_14TimerEventTypeE"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a3fc0",
+   "pre": "count_pre",
+   "comment": "_ZN2nn2os18SdkAllocateTlsSlotEPNS0_7TlsSlotEPFvmE"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a4460",
+   "pre": "count_pre",
+   "comment": "_ZN2nn2os18TryJamMessageQueueEPNS0_16MessageQueueTypeEm"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a4380",
+   "pre": "count_pre",
+   "comment": "_ZN2nn2os18TryWaitSystemEventEPNS0_15SystemEventTypeE"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a4d00",
+   "pre": "count_pre",
+   "comment": "_ZN2nn2os19AllocateMemoryBlockEPmm"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a39f0",
+   "pre": "count_pre",
+   "comment": "_ZN2nn2os19GenerateRandomBytesEPvm"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a43f0",
+   "pre": "count_pre",
+   "comment": "_ZN2nn2os19GetCurrentStackInfoEPmS1_"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a3f60",
+   "pre": "count_pre",
+   "comment": "_ZN2nn2os19InitializeMultiWaitEPNS0_13MultiWaitTypeE"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a3cc0",
+   "pre": "count_pre",
+   "comment": "_ZN2nn2os19InitializeSemaphoreEPNS0_13SemaphoreTypeEii"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a3f80",
+   "pre": "count_pre",
+   "comment": "_ZN2nn2os19LinkMultiWaitHolderEPNS0_13MultiWaitTypeEPNS0_19MultiWaitHolderTypeE"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a4450",
+   "pre": "count_pre",
+   "comment": "_ZN2nn2os19ReceiveMessageQueueEPmPNS0_16MessageQueueTypeE"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a4df0",
+   "pre": "count_pre",
+   "comment": "_ZN2nn2os19TryAcquireSemaphoreEPNS0_13SemaphoreTypeE"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a4420",
+   "pre": "count_pre",
+   "comment": "_ZN2nn2os19TrySendMessageQueueEPNS0_16MessageQueueTypeEm"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a43c0",
+   "pre": "count_pre",
+   "comment": "_ZN2nn2os20ChangeThreadPriorityEPNS0_10ThreadTypeEi"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a4410",
+   "pre": "count_pre",
+   "comment": "_ZN2nn2os20FinalizeMessageQueueEPNS0_16MessageQueueTypeE"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a35b0",
+   "pre": "count_pre",
+   "comment": "_ZN2nn2os20GetCurrentCoreNumberEv"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a4620",
+   "pre": "count_pre",
+   "comment": "_ZN2nn2os20InitializeLightEventEPNS0_14LightEventTypeEbNS0_14EventClearModeE"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a3c50",
+   "pre": "count_pre",
+   "comment": "_ZN2nn2os20InitializeTimerEventEPNS0_14TimerEventTypeENS0_14EventClearModeE"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a5620",
+   "pre": "count_pre",
+   "comment": "_ZN2nn2os20SetThreadNamePointerEPNS0_10ThreadTypeEPKc"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a3bf0",
+   "pre": "count_pre",
+   "comment": "_ZN2nn2os21SdkRecursiveMutexType10InitializeEv"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a3c00",
+   "pre": "count_pre",
+   "comment": "_ZN2nn2os21SdkRecursiveMutexType4LockEv"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a3c20",
+   "pre": "count_pre",
+   "comment": "_ZN2nn2os21SdkRecursiveMutexType6UnlockEv"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a3f50",
+   "pre": "count_pre",
+   "comment": "_ZN2nn2os21UnlinkMultiWaitHolderEPNS0_19MultiWaitHolderTypeE"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a3790",
+   "pre": "count_pre",
+   "comment": "_ZN2nn2os21WaitConditionVariableEPNS0_21ConditionVariableTypeEPNS0_9MutexTypeE"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a4130",
+   "pre": "count_pre",
+   "comment": "_ZN2nn2os22GetSystemTickFrequencyEv"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a4400",
+   "pre": "count_pre",
+   "comment": "_ZN2nn2os22InitializeMessageQueueEPNS0_16MessageQueueTypeEPmm"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a3c60",
+   "pre": "count_pre",
+   "comment": "_ZN2nn2os22StartOneShotTimerEventEPNS0_14TimerEventTypeENS_8TimeSpanE"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a4440",
+   "pre": "count_pre",
+   "comment": "_ZN2nn2os22TryReceiveMessageQueueEPmPNS0_16MessageQueueTypeE"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a3dd0",
+   "pre": "count_pre",
+   "comment": "_ZN2nn2os23FinalizeMultiWaitHolderEPNS0_19MultiWaitHolderTypeE"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a3780",
+   "pre": "count_pre",
+   "comment": "_ZN2nn2os23SignalConditionVariableEPNS0_21ConditionVariableTypeE"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a50c0",
+   "pre": "count_pre",
+   "comment": "_ZN2nn2os23StartPeriodicTimerEventEPNS0_14TimerEventTypeENS_8TimeSpanES3_"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a37b0",
+   "pre": "count_pre",
+   "comment": "_ZN2nn2os25FinalizeConditionVariableEPNS0_21ConditionVariableTypeE"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a3fe0",
+   "pre": "count_pre",
+   "comment": "_ZN2nn2os25InitializeMultiWaitHolderEPNS0_19MultiWaitHolderTypeEPNS0_14TimerEventTypeE"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a3fd0",
+   "pre": "count_pre",
+   "comment": "_ZN2nn2os25InitializeMultiWaitHolderEPNS0_19MultiWaitHolderTypeEPNS0_15SystemEventTypeE"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a3220",
+   "pre": "count_pre",
+   "comment": "_ZN2nn2os25InitializeMultiWaitHolderEPNS0_19MultiWaitHolderTypeEPNS0_9EventTypeE"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a4e20",
+   "pre": "count_pre",
+   "comment": "_ZN2nn2os26BroadcastConditionVariableEPNS0_21ConditionVariableTypeE"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a3fa0",
+   "pre": "count_pre",
+   "comment": "_ZN2nn2os26GetMultiWaitHolderUserDataEPKNS0_19MultiWaitHolderTypeE"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a43d0",
+   "pre": "count_pre",
+   "comment": "_ZN2nn2os26GetThreadAvailableCoreMaskEv"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a3f40",
+   "pre": "count_pre",
+   "comment": "_ZN2nn2os26SetMultiWaitHolderUserDataEPNS0_19MultiWaitHolderTypeEm"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a37a0",
+   "pre": "count_pre",
+   "comment": "_ZN2nn2os27InitializeConditionVariableEPNS0_21ConditionVariableTypeE"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a4e00",
+   "pre": "count_pre",
+   "comment": "_ZN2nn2os28IsMutexLockedByCurrentThreadEPKNS0_9MutexTypeE"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a4d10",
+   "pre": "count_pre",
+   "comment": "_ZN2nn2os32SetMemoryAllocatorForThreadLocalEPFPvmmEPFvS1_mE"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a5250",
+   "pre": "count_pre",
+   "comment": "_ZN2nn2os36GetVirtualAddressMemoryResourceUsageEv"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a3f90",
+   "pre": "count_pre",
+   "comment": "_ZN2nn2os7WaitAnyEPNS0_13MultiWaitTypeE"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a30f0",
+   "pre": "count_pre",
+   "comment": "_ZN2nn2os9LockMutexEPNS0_9MutexTypeE"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a3230",
+   "pre": "count_pre",
+   "comment": "_ZN2nn2os9WaitEventEPNS0_9EventTypeE"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a3c10",
+   "pre": "count_pre",
+   "comment": "_ZNK2nn2os21SdkRecursiveMutexType23IsLockedByCurrentThreadEv"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a3a00",
+   "pre": "count_pre",
+   "comment": "nnosConvertTickToNanoSeconds"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a2d50",
+   "pre": "count_pre",
+   "comment": "nnosCreateThread"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a2d90",
+   "pre": "count_pre",
+   "comment": "nnosDestroyThread"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a2dd0",
+   "pre": "count_pre",
+   "comment": "nnosFinalizeEvent"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a2a60",
+   "pre": "count_pre",
+   "comment": "nnosFinalizeMutex"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a2d30",
+   "pre": "count_pre",
+   "comment": "nnosGetCurrentThread"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a2ce0",
+   "pre": "count_pre",
+   "comment": "nnosGetSystemTick"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a2cf0",
+   "pre": "count_pre",
+   "comment": "nnosGetSystemTickFrequency"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a2d60",
+   "pre": "count_pre",
+   "comment": "nnosGetThreadCoreMask"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a2d40",
+   "pre": "count_pre",
+   "comment": "nnosGetThreadPriority"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a2da0",
+   "pre": "count_pre",
+   "comment": "nnosInitializeEvent"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a2a40",
+   "pre": "count_pre",
+   "comment": "nnosInitializeMutex"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a2a20",
+   "pre": "count_pre",
+   "comment": "nnosLockMutex"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a2d70",
+   "pre": "count_pre",
+   "comment": "nnosSetThreadCoreMask"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a2d80",
+   "pre": "count_pre",
+   "comment": "nnosSetThreadNamePointer"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a2de0",
+   "pre": "count_pre",
+   "comment": "nnosSignalEvent"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a2a10",
+   "pre": "count_pre",
+   "comment": "nnosSleepThread"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a2db0",
+   "pre": "count_pre",
+   "comment": "nnosStartThread"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a2a30",
+   "pre": "count_pre",
+   "comment": "nnosUnlockMutex"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a2dc0",
+   "pre": "count_pre",
+   "comment": "nnosWaitEvent"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a2df0",
+   "pre": "count_pre",
+   "comment": "nnosWaitThread"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a2460",
+   "pre": "count_pre",
+   "comment": "pthread_cond_broadcast"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a34e0",
+   "pre": "count_pre",
+   "comment": "pthread_cond_destroy"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a34d0",
+   "pre": "count_pre",
+   "comment": "pthread_cond_init"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a3510",
+   "pre": "count_pre",
+   "comment": "pthread_cond_signal"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a34f0",
+   "pre": "count_pre",
+   "comment": "pthread_cond_timedwait"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a3500",
+   "pre": "count_pre",
+   "comment": "pthread_cond_wait"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a34c0",
+   "pre": "count_pre",
+   "comment": "pthread_condattr_init"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a2450",
+   "pre": "count_pre",
+   "comment": "pthread_getspecific"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a2440",
+   "pre": "count_pre",
+   "comment": "pthread_join"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a34b0",
+   "pre": "count_pre",
+   "comment": "pthread_mutex_destroy"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a34a0",
+   "pre": "count_pre",
+   "comment": "pthread_mutex_init"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a2420",
+   "pre": "count_pre",
+   "comment": "pthread_mutex_lock"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a2430",
+   "pre": "count_pre",
+   "comment": "pthread_mutex_unlock"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a3840",
+   "pre": "count_pre",
+   "comment": "pthread_mutexattr_destroy"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a3820",
+   "pre": "count_pre",
+   "comment": "pthread_mutexattr_init"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a3830",
+   "pre": "count_pre",
+   "comment": "pthread_mutexattr_settype"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a23f0",
+   "pre": "count_pre",
+   "comment": "pthread_once"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a3af0",
+   "pre": "count_pre",
+   "comment": "pthread_rwlock_destroy"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a3ae0",
+   "pre": "count_pre",
+   "comment": "pthread_rwlock_init"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a3b30",
+   "pre": "count_pre",
+   "comment": "pthread_rwlock_rdlock"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a3b20",
+   "pre": "count_pre",
+   "comment": "pthread_rwlock_unlock"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a3b10",
+   "pre": "count_pre",
+   "comment": "pthread_rwlock_wrlock"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a3410",
+   "pre": "count_pre",
+   "comment": "pthread_self"
+  },
+  {
+   "module": "main",
+   "offset": "0x32a24b0",
+   "pre": "count_pre",
+   "comment": "sched_yield"
+  }
+ ],
+ "config": {
+  "report_seconds": 20
+ }
+}

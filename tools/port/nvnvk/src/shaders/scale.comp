@@ -1,0 +1,60 @@
+// nvnvk final pass scaling to window resolution (option `upscale`):
+//  - upscale with "sharp": 2-lobe Lanczos (4x4) clamped to the min/max of the 4 nearest texels (no halos),
+//    in the style of spatial upscalers; own implementation;
+//  - downscale (internal resolution above the window's): average over the whole area the pixel covers (supersampling).
+// glslangValidator -V --vn kScaleSpv -o scale.comp.inc scale.comp
+#version 450
+layout(local_size_x = 8, local_size_y = 8) in;
+layout(set = 0, binding = 0) uniform sampler2D src;  // linear filter
+layout(set = 0, binding = 1, rgba16f) uniform writeonly image2D dst;
+layout(push_constant) uniform Pc {
+    ivec2 src_size;
+    ivec2 dst_size;
+} pc;
+
+float Lanczos2(float x) {
+    x = abs(x);
+    if (x < 1e-4) return 1.0;
+    if (x >= 2.0) return 0.0;
+    const float px = 3.14159265 * x;
+    return 2.0 * sin(px) * sin(px * 0.5) / (px * px);
+}
+
+void main() {
+    const ivec2 p = ivec2(gl_GlobalInvocationID.xy);
+    if (p.x >= pc.dst_size.x || p.y >= pc.dst_size.y) return;
+    const vec2 ratio = vec2(pc.src_size) / vec2(pc.dst_size);
+    const vec2 rcp = 1.0 / vec2(pc.src_size);
+    vec4 outc;
+    if (ratio.x > 1.001 || ratio.y > 1.001) {
+        // Downscale: n x n bilinear samples spread over the pixel's area (each already averages 2x2).
+        const ivec2 n = clamp(ivec2(ceil(ratio * 0.5)), ivec2(1), ivec2(8));
+        const vec2 lo = vec2(p) * ratio, stp = ratio / vec2(n);
+        vec4 acc = vec4(0.0);
+        for (int j = 0; j < n.y; ++j)
+            for (int i = 0; i < n.x; ++i) acc += textureLod(src, (lo + (vec2(i, j) + 0.5) * stp) * rcp, 0.0);
+        outc = acc / float(n.x * n.y);
+    } else {
+        const vec2 sp = (vec2(p) + 0.5) * ratio - 0.5;  // in source texels
+        const vec2 f = floor(sp), t = sp - f;
+        const ivec2 b = ivec2(f);
+        vec4 acc = vec4(0.0);
+        float wsum = 0.0;
+        vec4 mn = vec4(1e9), mx = vec4(-1e9);
+        for (int j = -1; j <= 2; ++j) {
+            const float wy = Lanczos2(float(j) - t.y);
+            for (int i = -1; i <= 2; ++i) {
+                const vec4 c = texelFetch(src, clamp(b + ivec2(i, j), ivec2(0), pc.src_size - 1), 0);
+                const float w = Lanczos2(float(i) - t.x) * wy;
+                acc += c * w;
+                wsum += w;
+                if (i >= 0 && i <= 1 && j >= 0 && j <= 1) {
+                    mn = min(mn, c);
+                    mx = max(mx, c);
+                }
+            }
+        }
+        outc = clamp(acc / wsum, mn, mx);
+    }
+    imageStore(dst, p, outc);
+}

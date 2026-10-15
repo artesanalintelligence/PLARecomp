@@ -1,0 +1,12 @@
+{
+  "id": "pla_api_selftest",
+  "name": "Self-test of the pla_api 1.1 extension (kernel events, host pointers)",
+  "version": "1.0.0",
+  "title_id": "01001F5010DFA000",
+  "library": "pla_api_selftest.dll",
+  "enabled": true,
+  "hooks": [
+    { "module": "main", "offset": "0x32a4850", "pre": "style_set_pre", "comment": "nn::hid::GetNpadStyleSet(const uint&) [PLT]: only as a clock on a game thread" }
+  ],
+  "config": {}
+}

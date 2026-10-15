@@ -1,0 +1,507 @@
+{
+ "format": "pla-patchlist-v1",
+ "name": "Fixed 60 FPS (corrected delta)",
+ "description": "Frame time from 33.3 ms to 16.7 ms, present interval 1 and the sites that add 1/30 per frame go to 1/60. Logic runs at real speed only if the game holds 60 FPS.",
+ "title_id": "01001F5010DFA000",
+ "version": "1.1.1",
+ "module": "main",
+ "build_id": "AEE8F150DDA1B5A838806E1A5EA6827AD9F3C51E",
+ "offsets": "offset of the main module (= Ghidra address - 0x7100000000; = pchtxt offset with offset_shift 0x100; IPS = offset + 0x100)",
+ "text_end_original": "0x32A5690",
+ "requires_text_extension_to": "0x32A5800",
+ "generator": "tools/patch/gen_60fps.py",
+ "patches": [
+  {
+   "offset": "0xAFBBC8",
+   "original": "08a1b772",
+   "patched": "0891b772",
+   "note": "AI node (calls 0x1984fc8): s0 *= -1/30 (vertical step) -> -1/60",
+   "asm_original": "movk w8, #0xbd08, lsl #16",
+   "asm_patched": "movk w8, #0xbc88, lsl #16"
+  },
+  {
+   "offset": "0x13B33A0",
+   "original": "08a1a772",
+   "patched": "0891a772",
+   "note": "vtable_7104114778::vf9: timer +0x48c += 1/30 -> 1/60",
+   "asm_original": "movk w8, #0x3d08, lsl #16",
+   "asm_patched": "movk w8, #0x3c88, lsl #16"
+  },
+  {
+   "offset": "0x167FF10",
+   "original": "08a1a772",
+   "patched": "0891a772",
+   "note": "FUN_710167f988: timer +0x190 += 1/30 -> 1/60",
+   "asm_original": "movk w8, #0x3d08, lsl #16",
+   "asm_patched": "movk w8, #0x3c88, lsl #16"
+  },
+  {
+   "offset": "0x16832C4",
+   "original": "08a1a772",
+   "patched": "0891a772",
+   "note": "FUN_710168300c: timer +0x1a0 += 1/30 -> 1/60",
+   "asm_original": "movk w8, #0x3d08, lsl #16",
+   "asm_patched": "movk w8, #0x3c88, lsl #16"
+  },
+  {
+   "offset": "0x16832E8",
+   "original": "08a1a772",
+   "patched": "0891a772",
+   "note": "FUN_710168300c: timer +0x198 += 1/30 (6.0 s threshold) -> 1/60",
+   "asm_original": "movk w8, #0x3d08, lsl #16",
+   "asm_patched": "movk w8, #0x3c88, lsl #16"
+  },
+  {
+   "offset": "0x16836D4",
+   "original": "08a1a772",
+   "patched": "0891a772",
+   "note": "FUN_7101683528: timer +0x19c += 1/30 -> 1/60",
+   "asm_original": "movk w8, #0x3d08, lsl #16",
+   "asm_patched": "movk w8, #0x3c88, lsl #16"
+  },
+  {
+   "offset": "0x1982934",
+   "original": "08a1a772",
+   "patched": "0891a772",
+   "note": "vtable_7104139aa0::vf33: displacement = vel * k * 1/30 (see also 0x1982960) -> 1/60",
+   "asm_original": "movk w8, #0x3d08, lsl #16",
+   "asm_patched": "movk w8, #0x3c88, lsl #16"
+  },
+  {
+   "offset": "0x1982960",
+   "original": "08c2b712",
+   "patched": "08b2b712",
+   "note": "vtable_7104139aa0::vf33: inverse of the step 29.999998 -> 59.999996 (0x426fffff)",
+   "asm_original": "mov w8, #0x41efffff",
+   "asm_patched": "mov w8, #0x426fffff"
+  },
+  {
+   "offset": "0x1983764",
+   "original": "08a1a772",
+   "patched": "0891a772",
+   "note": "FUN_7101983760: returns the fixed 1/30 step (5 movement callers) -> 1/60",
+   "asm_original": "movk w8, #0x3d08, lsl #16",
+   "asm_patched": "movk w8, #0x3c88, lsl #16"
+  },
+  {
+   "offset": "0x1984A74",
+   "original": "08a1b772",
+   "patched": "0891b772",
+   "note": "vtable_7104139aa0::vf37: gravity v.y += g(+0xf8) * scale(+0xbe8) * -1/30 -> -1/60",
+   "asm_original": "movk w8, #0xbd08, lsl #16",
+   "asm_patched": "movk w8, #0xbc88, lsl #16"
+  },
+  {
+   "offset": "0x198DA90",
+   "original": "08a1b772",
+   "patched": "0891b772",
+   "note": "vtable_7104139aa0::vf78: gravity * -1/30 -> -1/60",
+   "asm_original": "movk w8, #0xbd08, lsl #16",
+   "asm_patched": "movk w8, #0xbc88, lsl #16"
+  },
+  {
+   "offset": "0x198E024",
+   "original": "08a1a772",
+   "patched": "0891a772",
+   "note": "vtable_7104139aa0::vf78: velocity integration * 1/30 -> 1/60",
+   "asm_original": "movk w8, #0x3d08, lsl #16",
+   "asm_patched": "movk w8, #0x3c88, lsl #16"
+  },
+  {
+   "offset": "0x198EC70",
+   "original": "08a1a772",
+   "patched": "0891a772",
+   "note": "vtable_7104139aa0::vf82: velocity integration * 1/30 -> 1/60",
+   "asm_original": "movk w8, #0x3d08, lsl #16",
+   "asm_patched": "movk w8, #0x3c88, lsl #16"
+  },
+  {
+   "offset": "0x1A0B3B0",
+   "original": "08a1b772",
+   "patched": "0891b772",
+   "note": "vtable_710413db48: timer +0x750 -= f * 1/30 -> -1/60",
+   "asm_original": "movk w8, #0xbd08, lsl #16",
+   "asm_patched": "movk w8, #0xbc88, lsl #16"
+  },
+  {
+   "offset": "0x1A0BAF4",
+   "original": "08a1a772",
+   "patched": "0891a772",
+   "note": "vtable_710413db48::vf84: pos += v * 1/30 -> 1/60",
+   "asm_original": "movk w8, #0x3d08, lsl #16",
+   "asm_patched": "movk w8, #0x3c88, lsl #16"
+  },
+  {
+   "offset": "0x1A0BEE8",
+   "original": "08a1a772",
+   "patched": "0891a772",
+   "note": "vtable_710413db48::vf84: v * 1/30 (vector) -> 1/60",
+   "asm_original": "movk w8, #0x3d08, lsl #16",
+   "asm_patched": "movk w8, #0x3c88, lsl #16"
+  },
+  {
+   "offset": "0x1A0DA24",
+   "original": "08a1a772",
+   "patched": "0891a772",
+   "note": "vtable_710413db48::vf35: displacement = v * 1/30 -> 1/60",
+   "asm_original": "movk w8, #0x3d08, lsl #16",
+   "asm_patched": "movk w8, #0x3c88, lsl #16"
+  },
+  {
+   "offset": "0x1A0EEA4",
+   "original": "08a1a772",
+   "patched": "0891a772",
+   "note": "vtable_710413db48::vf82: integration * 1/30 -> 1/60",
+   "asm_original": "movk w8, #0x3d08, lsl #16",
+   "asm_patched": "movk w8, #0x3c88, lsl #16"
+  },
+  {
+   "offset": "0x1A0F308",
+   "original": "08a1a772",
+   "patched": "0891a772",
+   "note": "vtable_710413db48::vf119: step = 1/30 (default value) -> 1/60",
+   "asm_original": "movk w8, #0x3d08, lsl #16",
+   "asm_patched": "movk w8, #0x3c88, lsl #16"
+  },
+  {
+   "offset": "0x1A0F49C",
+   "original": "16a1a772",
+   "patched": "1691a772",
+   "note": "vtable_710413db48::vf119: step = 1/30 (w22) -> 1/60",
+   "asm_original": "movk w22, #0x3d08, lsl #16",
+   "asm_patched": "movk w22, #0x3c88, lsl #16"
+  },
+  {
+   "offset": "0x1A0F560",
+   "original": "08a1a772",
+   "patched": "0891a772",
+   "note": "vtable_710413db48::vf119: step = 1/30 -> 1/60",
+   "asm_original": "movk w8, #0x3d08, lsl #16",
+   "asm_patched": "movk w8, #0x3c88, lsl #16"
+  },
+  {
+   "offset": "0x1A158CC",
+   "original": "08a1b772",
+   "patched": "0891b772",
+   "note": "vtable_710413db48: gravity v.y += g(+0xf8) * k * -1/30 -> -1/60",
+   "asm_original": "movk w8, #0xbd08, lsl #16",
+   "asm_patched": "movk w8, #0xbc88, lsl #16"
+  },
+  {
+   "offset": "0x1A17B14",
+   "original": "08a1a772",
+   "patched": "0891a772",
+   "note": "vtable_710413db48::vf70: pos += v * 1/30 -> 1/60",
+   "asm_original": "movk w8, #0x3d08, lsl #16",
+   "asm_patched": "movk w8, #0x3c88, lsl #16"
+  },
+  {
+   "offset": "0x1A17F40",
+   "original": "08a1a772",
+   "patched": "0891a772",
+   "note": "vtable_710413db48::vf70: pos += v * 1/30 -> 1/60",
+   "asm_original": "movk w8, #0x3d08, lsl #16",
+   "asm_patched": "movk w8, #0x3c88, lsl #16"
+  },
+  {
+   "offset": "0x1A19108",
+   "original": "08a1a772",
+   "patched": "0891a772",
+   "note": "vtable_710413db48::vf70: FUN_7101727df4(dt=1/30, ...) -> 1/60",
+   "asm_original": "movk w8, #0x3d08, lsl #16",
+   "asm_patched": "movk w8, #0x3c88, lsl #16"
+  },
+  {
+   "offset": "0x1A196C8",
+   "original": "08a1a772",
+   "patched": "0891a772",
+   "note": "FUN_7101a19654: FUN_7101727df4(dt=1/30, ...) -> 1/60",
+   "asm_original": "movk w8, #0x3d08, lsl #16",
+   "asm_patched": "movk w8, #0x3c88, lsl #16"
+  },
+  {
+   "offset": "0x1A71A6C",
+   "original": "00d0271e2118201e",
+   "patched": "25cf60941f2003d5",
+   "note": "vtable_7104137528::vf17: +0x618 += f / 30 (s1 = s1 / s0) -> / 60 (bl to the cave; x30 is already saved in the prologue)",
+   "asm_original": "fmov s0, #30.00000000; fdiv s1, s1, s0",
+   "asm_patched": "bl #0x32a5700; nop"
+  },
+  {
+   "offset": "0x1A71ABC",
+   "original": "01d0271e4418211e",
+   "patched": "15cf60941f2003d5",
+   "note": "vtable_7104137528::vf17: +0x618 += f / 30 (s4 = s2 / s1) -> / 60 (bl to the cave; x30 is already saved in the prologue)",
+   "asm_original": "fmov s1, #30.00000000; fdiv s4, s2, s1",
+   "asm_patched": "bl #0x32a5710; nop"
+  },
+  {
+   "offset": "0x1AAB5A8",
+   "original": "08a1b772",
+   "patched": "0891b772",
+   "note": "FUN_7101aab*: timer +0x50 -= 1/30 -> -1/60",
+   "asm_original": "movk w8, #0xbd08, lsl #16",
+   "asm_patched": "movk w8, #0xbc88, lsl #16"
+  },
+  {
+   "offset": "0x1AAB5D8",
+   "original": "08a1b772",
+   "patched": "0891b772",
+   "note": "FUN_7101aab*: timer +0x54 -= 1/30 -> -1/60",
+   "asm_original": "movk w8, #0xbd08, lsl #16",
+   "asm_patched": "movk w8, #0xbc88, lsl #16"
+  },
+  {
+   "offset": "0x1B47F60",
+   "original": "08a1b772",
+   "patched": "0891b772",
+   "note": "vtable_710414bc28::vf18: timer [x21] -= f * 1/30 -> -1/60",
+   "asm_original": "movk w8, #0xbd08, lsl #16",
+   "asm_patched": "movk w8, #0xbc88, lsl #16"
+  },
+  {
+   "offset": "0x1B47F98",
+   "original": "08a1b772",
+   "patched": "0891b772",
+   "note": "vtable_710414bc28::vf18: timer +0x250 -= f * 1/30 -> -1/60",
+   "asm_original": "movk w8, #0xbd08, lsl #16",
+   "asm_patched": "movk w8, #0xbc88, lsl #16"
+  },
+  {
+   "offset": "0x1B47FD0",
+   "original": "08a1b772",
+   "patched": "0891b772",
+   "note": "vtable_710414bc28::vf18: timer +0x254 -= f * 1/30 -> -1/60",
+   "asm_original": "movk w8, #0xbd08, lsl #16",
+   "asm_patched": "movk w8, #0xbc88, lsl #16"
+  },
+  {
+   "offset": "0x1B48A4C",
+   "original": "08a1a772",
+   "patched": "0891a772",
+   "note": "vtable_710414bc28::vf18: timer +0x254 += f * 1/30 -> 1/60",
+   "asm_original": "movk w8, #0x3d08, lsl #16",
+   "asm_patched": "movk w8, #0x3c88, lsl #16"
+  },
+  {
+   "offset": "0x1B48A98",
+   "original": "08a1a772",
+   "patched": "0891a772",
+   "note": "vtable_710414bc28::vf18: timer +0x24c += f * 1/30 -> 1/60",
+   "asm_original": "movk w8, #0x3d08, lsl #16",
+   "asm_patched": "movk w8, #0x3c88, lsl #16"
+  },
+  {
+   "offset": "0x1B49008",
+   "original": "08a1a772",
+   "patched": "0891a772",
+   "note": "vtable_710414bc28::vf18: timer +0x24c += f * 1/30 -> 1/60",
+   "asm_original": "movk w8, #0x3d08, lsl #16",
+   "asm_patched": "movk w8, #0x3c88, lsl #16"
+  },
+  {
+   "offset": "0x1B493F8",
+   "original": "08a1a772",
+   "patched": "0891a772",
+   "note": "vtable_710414bc28::vf18: timer +0x250 += f * 1/30 -> 1/60",
+   "asm_original": "movk w8, #0x3d08, lsl #16",
+   "asm_patched": "movk w8, #0x3c88, lsl #16"
+  },
+  {
+   "offset": "0x1D1B7D0",
+   "original": "08a1a772",
+   "patched": "0891a772",
+   "note": "vtable_7104152798::vf9: prediction pos + v * 1/30 -> 1/60",
+   "asm_original": "movk w8, #0x3d08, lsl #16",
+   "asm_patched": "movk w8, #0x3c88, lsl #16"
+  },
+  {
+   "offset": "0x1D5D688",
+   "original": "08a1a772",
+   "patched": "0891a772",
+   "note": "FUN_7101d5d59c: FUN_71024ac8c4(1/30, ...) (minute counter) -> 1/60",
+   "asm_original": "movk w8, #0x3d08, lsl #16",
+   "asm_patched": "movk w8, #0x3c88, lsl #16"
+  },
+  {
+   "offset": "0x1D5D858",
+   "original": "28f4e7f2",
+   "patched": "28f2e7f2",
+   "note": "FUN_7101d5d59c: FUN_7102a1a728((double)1/30, obj, 1) -> (double)(float)1/60",
+   "asm_original": "movk x8, #0x3fa1, lsl #48",
+   "asm_patched": "movk x8, #0x3f91, lsl #48"
+  },
+  {
+   "offset": "0x1D5D874",
+   "original": "28f4e7f2",
+   "patched": "28f2e7f2",
+   "note": "FUN_7101d5d59c: FUN_7102a1a728((double)1/30, obj, 1) -> (double)(float)1/60",
+   "asm_original": "movk x8, #0x3fa1, lsl #48",
+   "asm_patched": "movk x8, #0x3f91, lsl #48"
+  },
+  {
+   "offset": "0x1D5D890",
+   "original": "28f4e7f2",
+   "patched": "28f2e7f2",
+   "note": "FUN_7101d5d59c: FUN_7102a1a728((double)1/30, obj, 1) -> (double)(float)1/60",
+   "asm_original": "movk x8, #0x3fa1, lsl #48",
+   "asm_patched": "movk x8, #0x3f91, lsl #48"
+  },
+  {
+   "offset": "0x257AC34",
+   "original": "08a1a772",
+   "patched": "0891a772",
+   "note": "vtable_71041629a8::vf119: FUN_7101713904(f * k * 1/30) -> 1/60",
+   "asm_original": "movk w8, #0x3d08, lsl #16",
+   "asm_patched": "movk w8, #0x3c88, lsl #16"
+  },
+  {
+   "offset": "0x257C9F8",
+   "original": "08a1a772",
+   "patched": "0891a772",
+   "note": "vtable_71041629a8::vf84: pos += v * 1/30 -> 1/60",
+   "asm_original": "movk w8, #0x3d08, lsl #16",
+   "asm_patched": "movk w8, #0x3c88, lsl #16"
+  },
+  {
+   "offset": "0x257CE3C",
+   "original": "08a1a772",
+   "patched": "0891a772",
+   "note": "vtable_71041629a8::vf84: v * 1/30 (vector) -> 1/60",
+   "asm_original": "movk w8, #0x3d08, lsl #16",
+   "asm_patched": "movk w8, #0x3c88, lsl #16"
+  },
+  {
+   "offset": "0x25AC3DC",
+   "original": "08a1b772",
+   "patched": "0891b772",
+   "note": "ride controller: gravity * -1/30 (mount jumps) -> -1/60",
+   "asm_original": "movk w8, #0xbd08, lsl #16",
+   "asm_patched": "movk w8, #0xbc88, lsl #16"
+  },
+  {
+   "offset": "0x2795234",
+   "original": "08a1a772",
+   "patched": "0891a772",
+   "note": "FUN_7102795204: fixed dt 1/30 unless flag +0x150 -> 1/60",
+   "asm_original": "movk w8, #0x3d08, lsl #16",
+   "asm_patched": "movk w8, #0x3c88, lsl #16"
+  },
+  {
+   "offset": "0x29C17FC",
+   "original": "0101271e",
+   "patched": "d18f2394",
+   "note": "sky vf7: s1 = -300 (+0x5dc += speed / -300 per frame) -> -600 (bl to the cave)",
+   "asm_original": "fmov s1, w8",
+   "asm_patched": "bl #0x32a5740"
+  },
+  {
+   "offset": "0x29C1930",
+   "original": "0101271e",
+   "patched": "888f2394",
+   "note": "sky vf7: s1 = -300 (+0x614 += speed / -300 per frame) -> -600 (bl to the cave)",
+   "asm_original": "fmov s1, w8",
+   "asm_patched": "bl #0x32a5750"
+  },
+  {
+   "offset": "0x29C1FA4",
+   "original": "0bd0271e",
+   "patched": "df8d2394",
+   "note": "sky vf7: s11 = 30 (divisor of the cloud UV scroll +0x608/+0x60c/+0x610) -> 60 (bl to the cave)",
+   "asm_original": "fmov s11, #30.00000000",
+   "asm_patched": "bl #0x32a5720"
+  },
+  {
+   "offset": "0x29C2990",
+   "original": "02d0271e",
+   "patched": "688b2394",
+   "note": "sky vf7: s2 = 30 (k * 30, divisor of the +0x64c offset) -> 60 (bl to the cave)",
+   "asm_original": "fmov s2, #30.00000000",
+   "asm_patched": "bl #0x32a5730"
+  },
+  {
+   "offset": "0x29FAF90",
+   "original": "08a1a772",
+   "patched": "0891a772",
+   "note": "vtable_7104183390::vf17: time accumulator += 1/30 (wraps at 10000) -> 1/60",
+   "asm_original": "movk w8, #0x3d08, lsl #16",
+   "asm_patched": "movk w8, #0x3c88, lsl #16"
+  },
+  {
+   "offset": "0x2AA278C",
+   "original": "01050011",
+   "patched": "21008052",
+   "note": "nvnWindowSetPresentInterval(win, 1) instead of cfg+1 (=2)",
+   "asm_original": "add w1, w8, #1",
+   "asm_patched": "mov w1, #1"
+  },
+  {
+   "offset": "0x2AF25F8",
+   "original": "08a1a772",
+   "patched": "0891a772",
+   "note": "FUN_7102af25b4: fixed dt 1/30 unless flag +0x121 -> 1/60",
+   "asm_original": "movk w8, #0x3d08, lsl #16",
+   "asm_patched": "movk w8, #0x3c88, lsl #16"
+  },
+  {
+   "offset": "0x32A5700",
+   "original": "00000000000000000000000000000000",
+   "patched": "00d0271e0028201e2118201ec0035fd6",
+   "note": "cave: s1 = s1 / 60 (for 0x1a71a6c)",
+   "region": "cave",
+   "asm_original": "(padding)",
+   "asm_patched": "fmov s0, #30.00000000; fadd s0, s0, s0; fdiv s1, s1, s0; ret"
+  },
+  {
+   "offset": "0x32A5710",
+   "original": "00000000000000000000000000000000",
+   "patched": "01d0271e2128211e4418211ec0035fd6",
+   "note": "cave: s4 = s2 / 60 (for 0x1a71abc)",
+   "region": "cave",
+   "asm_original": "(padding)",
+   "asm_patched": "fmov s1, #30.00000000; fadd s1, s1, s1; fdiv s4, s2, s1; ret"
+  },
+  {
+   "offset": "0x32A5720",
+   "original": "00000000000000000000000000000000",
+   "patched": "4b00001cc0035fd6000070421f2003d5",
+   "note": "cave: s11 = 60 (for 0x29c1fa4)",
+   "region": "cave",
+   "asm_original": "(padding)",
+   "asm_patched": "ldr s11, #0x32a5728; ret; .word 0x42700000; nop"
+  },
+  {
+   "offset": "0x32A5730",
+   "original": "00000000000000000000000000000000",
+   "patched": "4200001cc0035fd6000070421f2003d5",
+   "note": "cave: s2 = 60 (for 0x29c2990)",
+   "region": "cave",
+   "asm_original": "(padding)",
+   "asm_patched": "ldr s2, #0x32a5738; ret; .word 0x42700000; nop"
+  },
+  {
+   "offset": "0x32A5740",
+   "original": "00000000000000000000000000000000",
+   "patched": "4100001cc0035fd6000016c41f2003d5",
+   "note": "cave: s1 = -600 (for 0x29c17fc)",
+   "region": "cave",
+   "asm_original": "(padding)",
+   "asm_patched": "ldr s1, #0x32a5748; ret; ld1sb {z0.d}, p0/z, [x0, z22.d, uxtw]; nop"
+  },
+  {
+   "offset": "0x32A5750",
+   "original": "00000000000000000000000000000000",
+   "patched": "4100001cc0035fd6000016c41f2003d5",
+   "note": "cave: s1 = -600 (for 0x29c1930)",
+   "region": "cave",
+   "asm_original": "(padding)",
+   "asm_patched": "ldr s1, #0x32a5758; ret; ld1sb {z0.d}, p0/z, [x0, z22.d, uxtw]; nop"
+  },
+  {
+   "offset": "0x397E8D8",
+   "original": "56a0fc0100000000",
+   "patched": "2b50fe0000000000",
+   "note": "rodata: ns per frame of mode 1 (33333334 -> 16666667); read by the game clocks every frame"
+  }
+ ]
+}

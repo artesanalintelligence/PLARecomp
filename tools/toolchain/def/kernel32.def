@@ -1,0 +1,20 @@
+; Own import library (port's portable toolchain): only the names used by the emitted C.
+LIBRARY kernel32.dll
+EXPORTS
+    GetCurrentProcess
+    GetCurrentProcessId
+    GetCurrentThreadId
+    GetModuleHandleExA
+    GetModuleHandleA
+    GetProcAddress
+    Sleep
+    DisableThreadLibraryCalls
+    QueryPerformanceCounter
+    QueryPerformanceFrequency
+    OutputDebugStringA
+    K32EnumProcessModules
+    GetSystemTimeAsFileTime
+    GetModuleFileNameA
+    GetTickCount64
+    AcquireSRWLockExclusive
+    ReleaseSRWLockExclusive

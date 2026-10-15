@@ -1,0 +1,14 @@
+{
+  "id": "research_level_fix",
+  "name": "Fix for the freeze when reporting to the professor (negative research levels)",
+  "version": "1.0.0",
+  "title_id": "01001F5010DFA000",
+  "build_id": "AEE8F150DDA1B5A838806E1A5EA6827AD9F3C51E",
+  "library": "research_level_fix.dll",
+  "enabled": true,
+  "hooks": [
+    { "module": "main", "offset": "0x1030984", "pre": "levels_gained_pre", "post": "levels_gained_post",
+      "comment": "research levels gained per task; the caller (main+0x102ff84) loops w0 times" }
+  ],
+  "config": { "clamp": true, "log_max": 20 }
+}

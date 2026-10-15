@@ -1,0 +1,61 @@
+{
+  "id": "islands",
+  "name": "Native islands: hottest game functions as native code (skeleton world matrices, skin palette)",
+  "version": "0.5.0",
+  "title_id": "01001F5010DFA000",
+  "build_id": "AEE8F150DDA1B5A838806E1A5EA6827AD9F3C51E",
+  "library": "islands.dll",
+  "enabled": true,
+  "hooks": [
+    {
+      "module": "main",
+      "offset": "0x2a697ac",
+      "pre": "skel_joint_pre",
+      "expect": [
+        "0xd104c3ff",
+        "0x6d093bef"
+      ],
+      "comment": "skeleton joint world-matrix update (lazy, recursive)"
+    },
+    {
+      "module": "main",
+      "offset": "0x2a6baf4",
+      "pre": "skel_loop_pre",
+      "expect": [
+        "0xb9427a88",
+        "0xb9427289"
+      ],
+      "comment": "per-joint loop of the skeleton update-all 0x2A6BA60 (region entry after the lock)"
+    },
+    {
+      "module": "main",
+      "offset": "0x29c98bc",
+      "pre": "palette_pre",
+      "expect": [
+        "0x13003ea8",
+        "0x7100051f"
+      ],
+      "comment": "skin palette loop of 0x29C983C (region entry after the buffer lookup)"
+    },
+    {
+      "module": "main",
+      "offset": "0x2a3781c",
+      "pre": "mtx_decompose_pre",
+      "expect": [
+        "0xad400823",
+        "0x6e22dc53"
+      ],
+      "comment": "leaf: 4x4 matrix -> scale/rotation decomposition (region island)"
+    }
+  ],
+  "config": {
+    "skeleton": true,
+    "palette": true,
+    "constraints": true,
+    "verify": false,
+    "capture": 0,
+    "stats_s": 10,
+    "update_all": true,
+    "decompose": true
+  }
+}

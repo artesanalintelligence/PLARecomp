@@ -1,0 +1,97 @@
+// PLARecomp keyboard and mouse controls (nnshim). Esc opens the in-game menu, so it is not a game button.
+// Changes made from the in-game menu (Esc > Controls) apply when the menu closes; editing this file by
+// hand takes effect the next time the game starts.
+// Lines starting with // are comments. If the file has a format error, the game uses the defaults
+// (noted in the session log).
+//
+// Switch buttons: A B X Y L R ZL ZR Plus Minus StickL StickR Up Down Left Right
+// Stick directions (keyboard only): LStickUp LStickDown LStickLeft LStickRight, RStick...
+// Keys: letters A..Z, digits 0..9, F1..F24, NUMPAD0..NUMPAD9, RETURN (ENTER), SPACE, TAB,
+//   ESCAPE (ESC), BACK (BACKSPACE), LSHIFT, RSHIFT, LCTRL, RCTRL, LALT, RALT, UP, DOWN, LEFT,
+//   RIGHT, HOME, END, PAGEUP, PAGEDOWN, INSERT, DELETE, COMMA, PERIOD, MINUS, PLUS,
+//   or a Windows virtual-key code such as "VK_0xC0".
+// Several keys for one button: comma-separated, e.g. "RETURN,F".
+{
+  // true = the keyboard is added to the controller; false = disabled.
+  "keyboard": true,
+
+  "keyboard_map": {
+    "A": "RETURN",       "B": "BACK",         "X": "LSHIFT",       "Y": "SPACE",
+    "L": "Q",            "R": "E",            "ZL": "1",           "ZR": "3",
+    "Plus": "TAB",       "Minus": "M",        "StickL": "Z",       "StickR": "C",
+    "Up": "UP",          "Down": "DOWN",      "Left": "LEFT",      "Right": "RIGHT",
+    "LStickUp": "W",     "LStickDown": "S",   "LStickLeft": "A",   "LStickRight": "D",
+    "RStickUp": "I",     "RStickDown": "K",   "RStickLeft": "J",   "RStickRight": "L"
+  },
+
+  "mouse": {
+    // "auto" = only when no controller is connected; "on" = always; "off" = disabled.
+    "enabled": "auto",
+
+    // Camera (right stick). With sensitivity 1.0, moving the mouse at 1000 pixels per second tilts the
+    // stick 100 %. Raise it to turn faster.
+    "sensitivity": 1.0,
+    // Smoothing in milliseconds (0 = none; higher = smoother but more latency).
+    "smoothing_ms": 25,
+    // Response curve: 1 = linear; below 1 (e.g. 0.7) gives small movements more turn.
+    "curve": 1.0,
+    // Minimum tilt as soon as the mouse moves (to skip the game's dead zone). 0 to 0.9.
+    "anti_deadzone": 0.12,
+    // Below this speed (px/s) the camera does not turn, and if the mouse stays still for idle_stop_ms
+    // milliseconds it stops completely.
+    "min_speed": 15,
+    "idle_stop_ms": 40,
+    "invert_x": false,
+    "invert_y": false,
+
+    // Cursor capture: while the window has focus the cursor is hidden and confined to it.
+    // release_key toggles release / capture; hold_release_key releases it while held ("" = none).
+    // Switching windows (Alt+Tab) releases it automatically.
+    "release_key": "F1",
+    "hold_release_key": "LALT",
+    // true = capture again when returning to the window; false = only after a click inside it.
+    "capture_on_focus": true,
+    // With the cursor released, a left click inside the window captures it again.
+    "click_to_capture": true,
+    "hide_cursor": true,
+    "clip_cursor": true,
+
+    // Mouse buttons -> Switch buttons ("" = nothing; "A+B" = both at once).
+    // x1 / x2 = side buttons (back / forward). The wheel gives a short press per notch.
+    "buttons": {
+      "left": "ZR",
+      "right": "ZL",
+      "middle": "",
+      "x1": "",
+      "x2": "",
+      "wheel_up": "L",
+      "wheel_down": "R"
+    },
+    "wheel_pulse_ms": 60
+  },
+
+  "ui": {
+    // Button icons: "auto" = keys and mouse when no controller is connected (decided each time the game
+    // loads a screen), "keyboard" = always keys, "controller" = always the Switch ones.
+    // The key icons live in key_prompts.bin next to this file.
+    "button_prompts": "auto",
+
+    // Mouse in menus (inventory, map, lists, dialogs, battles): while you are not controlling the character,
+    // left click = A, right click = B, wheel = up/down, left-button drag = left stick (moves the map
+    // cursor). While controlling the character the mouse is the camera.
+    "mouse_menus": true,
+    "menu_buttons": { "left": "A", "right": "B", "middle": "", "wheel_up": "Up", "wheel_down": "Down" },
+    "menu_drag": true,
+    "menu_drag_sensitivity": 1.0,
+    // What counts as a menu: "nofield" = whenever you are not controlling the character (menus, dialogs,
+    // battles, cutscenes); "menu" = only the pause menus (inventory, map, settings...).
+    "menu_rule": "nofield",
+
+    // Mouse pointer in the game's menus: the cursor is free and visible; hovering an element highlights it
+    // and the left click accepts it (inventory, pause menu tabs and lists, context menus; on the map a click
+    // moves the map cursor there). Right click = B, wheel = up/down. false = the menu mouse described
+    // above (captured cursor, click = A).
+    "mouse_pointer": true,
+    "pointer_hover_select": true
+  }
+}

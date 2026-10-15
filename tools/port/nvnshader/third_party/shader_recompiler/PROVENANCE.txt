@@ -1,0 +1,22 @@
+This folder is the shader recompiler of the suyu project (a continuation of the yuzu emulator),
+copyright the suyu and yuzu Emulator Project contributors,
+GPL-3.0-or-later. It is vendored under a neutral folder name only so that no project name ends up
+in the shipped binaries' embedded source paths; all credit for this code belongs to its authors.
+
+Origin of this copy (read-only copy from the fork; the fork was not modified):
+
+  <fork>\third_party\suyu   (suyu/eden fork used by the v0 port)
+  commit fbe5f21b073a14ca7ba746abc66f675a4bee2613 (2026-10-04)
+
+Copied:
+  src/shader_recompiler/  complete except backend/glasm, backend/glsl and backend/msl
+  src/common/{common_types.h, bit_field.h, swap.h, div_ceil.h, alignment.h, common_funcs.h,
+              log_classes.inc, logging.h, assert.h}
+
+Replaced (tools/port/nvnshader/compat): common/settings.h (minimal), logging and assertion
+implementation (UNREACHABLE throws std::logic_error instead of aborting).
+
+License: GPL-3.0-or-later (see LICENSE.txt), with GPL-2.0-or-later parts from yuzu.
+Local changes: frontend/ir/attribute.cpp and frontend/ir/flow_test.cpp were removed (leftovers the
+fork's CMakeLists no longer builds); out-of-range constant buffer reads are clamped (comments marked
+"nvnshader:"). The source list is in ../../sources.cmake.

@@ -1,0 +1,14 @@
+{
+  "id": "frame_dt_probe",
+  "name": "Delta time probe of the unlocked FPS patch (PERF)",
+  "version": "1.0.0",
+  "title_id": "01001F5010DFA000",
+  "build_id": "AEE8F150DDA1B5A838806E1A5EA6827AD9F3C51E",
+  "library": "frame_dt_probe.dll",
+  "enabled": true,
+  "hooks": [
+    { "module": "main", "offset": "0x2783048", "pre": "clock_set_mode_pre",
+      "comment": "vf1 of the clock manager (setMode), patched to the real-clock code cave" }
+  ],
+  "config": { "report_seconds": 5 }
+}

@@ -1,0 +1,5 @@
+lz4>=4.0
+pycryptodome>=3.18
+pytest>=7.0
+# optional, only if the dump comes as NSZ/XCZ:
+# nsz>=4.6

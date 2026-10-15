@@ -1,0 +1,5 @@
+; Own import library (port's portable toolchain): only the names used by the emitted C.
+LIBRARY api-ms-win-crt-runtime-l1-1-0.dll
+EXPORTS
+    abort
+    exit

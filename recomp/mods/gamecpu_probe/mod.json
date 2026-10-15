@@ -1,0 +1,202 @@
+{
+  "id": "gamecpu_probe",
+  "name": "Game CPU probe: thread creation and nn::os wait times (measurement only)",
+  "version": "0.1.0",
+  "title_id": "01001F5010DFA000",
+  "build_id": "AEE8F150DDA1B5A838806E1A5EA6827AD9F3C51E",
+  "library": "gamecpu_probe.dll",
+  "enabled": true,
+  "hooks": [
+    {
+      "module": "main",
+      "offset": "0x32a3530",
+      "pre": "create7_pre",
+      "expect": [
+        "0xd0007e70",
+        "0xf940b211"
+      ],
+      "comment": "nn::os::CreateThread (7 args) [PLT]"
+    },
+    {
+      "module": "main",
+      "offset": "0x32a3540",
+      "pre": "create6_pre",
+      "expect": [
+        "0xd0007e70",
+        "0xf940b611"
+      ],
+      "comment": "nn::os::CreateThread (6 args) [PLT]"
+    },
+    {
+      "module": "main",
+      "offset": "0x32a3550",
+      "pre": "setcore_pre",
+      "expect": [
+        "0xd0007e70",
+        "0xf940ba11"
+      ],
+      "comment": "nn::os::SetThreadCoreMask [PLT]"
+    },
+    {
+      "module": "main",
+      "offset": "0x32a3570",
+      "pre": "setname_pre",
+      "expect": [
+        "0xd0007e70",
+        "0xf940c211"
+      ],
+      "comment": "nn::os::SetThreadName [PLT]"
+    },
+    {
+      "module": "main",
+      "offset": "0x32a43d0",
+      "pre": "coremask_pre",
+      "post": "coremask_post",
+      "expect": [
+        "0xb0007e70",
+        "0xf9445a11"
+      ],
+      "comment": "nn::os::GetThreadAvailableCoreMask [PLT]"
+    },
+    {
+      "module": "main",
+      "offset": "0x32a35d0",
+      "pre": "yield_pre",
+      "expect": [
+        "0xd0007e70",
+        "0xf940da11"
+      ],
+      "comment": "nn::os::YieldThread [PLT]"
+    },
+    {
+      "module": "main",
+      "offset": "0x32a35e0",
+      "pre": "sleep_pre",
+      "expect": [
+        "0xd0007e70",
+        "0xf940de11"
+      ],
+      "comment": "nn::os::SleepThread [PLT]"
+    },
+    {
+      "module": "main",
+      "offset": "0x32a30f0",
+      "pre": "lock_pre",
+      "post": "wait_post",
+      "expect": [
+        "0xb0007e70",
+        "0xf947a211"
+      ],
+      "comment": "nn::os::LockMutex [PLT]"
+    },
+    {
+      "module": "main",
+      "offset": "0x32a3230",
+      "pre": "waitev_pre",
+      "post": "wait_post",
+      "expect": [
+        "0xb0007e70",
+        "0xf947f211"
+      ],
+      "comment": "nn::os::WaitEvent [PLT]"
+    },
+    {
+      "module": "main",
+      "offset": "0x32a3250",
+      "pre": "timedwaitev_pre",
+      "post": "wait_post",
+      "expect": [
+        "0xb0007e70",
+        "0xf947fa11"
+      ],
+      "comment": "nn::os::TimedWaitEvent [PLT]"
+    },
+    {
+      "module": "main",
+      "offset": "0x32a3790",
+      "pre": "waitcv_pre",
+      "post": "wait_post",
+      "expect": [
+        "0xd0007e70",
+        "0xf9414a11"
+      ],
+      "comment": "nn::os::WaitConditionVariable [PLT]"
+    },
+    {
+      "module": "main",
+      "offset": "0x32a3ca0",
+      "pre": "acqsem_pre",
+      "post": "wait_post",
+      "expect": [
+        "0xd0007e70",
+        "0xf9428e11"
+      ],
+      "comment": "nn::os::AcquireSemaphore [PLT]"
+    },
+    {
+      "module": "main",
+      "offset": "0x32a3f90",
+      "pre": "waitany_pre",
+      "post": "wait_post",
+      "expect": [
+        "0xd0007e70",
+        "0xf9434a11"
+      ],
+      "comment": "nn::os::WaitAny [PLT]"
+    },
+    {
+      "module": "main",
+      "offset": "0x32a4540",
+      "pre": "waitlev_pre",
+      "post": "wait_post",
+      "expect": [
+        "0xb0007e70",
+        "0xf944b611"
+      ],
+      "comment": "nn::os::WaitLightEvent [PLT]"
+    },
+    {
+      "module": "main",
+      "offset": "0x32a4020",
+      "pre": "trylock_pre",
+      "expect": [
+        "0xb0007e70",
+        "0xf9436e11"
+      ],
+      "comment": "nn::os::TryLockMutex [PLT]"
+    },
+    {
+      "module": "main",
+      "offset": "0x32a3240",
+      "pre": "trywaitev_pre",
+      "expect": [
+        "0xb0007e70",
+        "0xf947f611"
+      ],
+      "comment": "nn::os::TryWaitEvent [PLT]"
+    },
+    {
+      "module": "main",
+      "offset": "0x32a4df0",
+      "pre": "tryacq_pre",
+      "expect": [
+        "0xb0007e70",
+        "0xf946e211"
+      ],
+      "comment": "nn::os::TryAcquireSemaphore [PLT]"
+    },
+    {
+      "module": "main",
+      "offset": "0x32a3fb0",
+      "pre": "trywaitany_pre",
+      "expect": [
+        "0xd0007e70",
+        "0xf9435211"
+      ],
+      "comment": "nn::os::TryWaitAny [PLT]"
+    }
+  ],
+  "config": {
+    "report_seconds": "10"
+  }
+}

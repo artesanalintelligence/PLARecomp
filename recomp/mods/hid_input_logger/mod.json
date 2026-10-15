@@ -1,0 +1,24 @@
+{
+  "id": "hid_input_logger",
+  "name": "nn::hid input logger (example)",
+  "version": "1.0.0",
+  "title_id": "01001F5010DFA000",
+  "build_id": "AEE8F150DDA1B5A838806E1A5EA6827AD9F3C51E",
+  "library": "hid_input_logger.dll",
+  "enabled": true,
+  "hooks": [
+    { "module": "main", "offset": "0x32a47a0", "pre": "npad_state_pre", "post": "npad_fullkey_post",  "comment": "nn::hid::GetNpadState(NpadFullKeyState*, const uint&) [PLT]" },
+    { "module": "main", "offset": "0x32a47b0", "pre": "npad_state_pre", "post": "npad_handheld_post", "comment": "nn::hid::GetNpadState(NpadHandheldState*, const uint&) [PLT]" },
+    { "module": "main", "offset": "0x32a47c0", "pre": "npad_state_pre", "post": "npad_joydual_post",  "comment": "nn::hid::GetNpadState(NpadJoyDualState*, const uint&) [PLT]" },
+    { "module": "main", "offset": "0x32a47d0", "pre": "npad_state_pre", "post": "npad_joyleft_post",  "comment": "nn::hid::GetNpadState(NpadJoyLeftState*, const uint&) [PLT]" },
+    { "module": "main", "offset": "0x32a47e0", "pre": "npad_state_pre", "post": "npad_joyright_post", "comment": "nn::hid::GetNpadState(NpadJoyRightState*, const uint&) [PLT]" },
+    { "module": "main", "offset": "0x32a4850", "pre": "npad_style_set_pre", "post": "npad_style_set_post", "comment": "nn::hid::GetNpadStyleSet(const uint&) [PLT]" }
+  ],
+  "config": {
+    "report_seconds": 5,
+    "force_buttons": "0x0",
+    "force_after_seconds": 60,
+    "force_for_seconds": 0.25,
+    "skip_style_set_value": -1
+  }
+}

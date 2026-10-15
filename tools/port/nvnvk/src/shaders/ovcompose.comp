@@ -1,0 +1,30 @@
+// In-game menu: menu background = the game's final frame, blurred and dimmed (with the open animation), at window
+// resolution, in RGBA8 (ImGui draws the UI on top and it is copied to the swapchain).
+// The frame is sampled the same way the blit would copy it (sRGB arrives decoded), so with no menu (t = 0) the image
+// matches the one without the layer.
+// glslangValidator -V --vn kOvComposeSpv -o ovcompose.comp.inc ovcompose.comp
+#version 450
+layout(local_size_x = 8, local_size_y = 8) in;
+layout(set = 0, binding = 0) uniform sampler2D src;      // game frame (linear filter)
+layout(set = 0, binding = 1, rgba8) uniform writeonly image2D dst;
+layout(set = 0, binding = 2) uniform sampler2D blurred;  // 1/4 resolution, blurred (linear filter)
+layout(push_constant) uniform Pc {
+    ivec2 size;
+    float t;      // 0 = game as is, 1 = menu background
+    float blur;   // 1 = use the blur
+    float dim;    // how much to darken (0..1)
+    float pad;
+} pc;
+
+void main() {
+    const ivec2 p = ivec2(gl_GlobalInvocationID.xy);
+    if (p.x >= pc.size.x || p.y >= pc.size.y) return;
+    const vec2 uv = (vec2(p) + 0.5) / vec2(pc.size);
+    const vec3 c = texture(src, uv).rgb;
+    vec3 b = pc.blur > 0.5 ? texture(blurred, uv).rgb : c;
+    const vec3 tint = vec3(0.030, 0.026, 0.052);
+    vec3 m = mix(b, tint, pc.dim);
+    const float v = smoothstep(0.95, 0.25, length((uv - 0.5) * vec2(1.25, 1.0)));
+    m *= mix(0.70, 1.0, v);
+    imageStore(dst, p, vec4(mix(c, m, clamp(pc.t, 0.0, 1.0)), 1.0));
+}

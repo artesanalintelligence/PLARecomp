@@ -1,0 +1,10 @@
+{
+  "clang": "9.0.0",
+  "opt": "-O3",
+  "flags": ["-g", "-funwind-tables", "-mcpu=cortex-a57+fp+simd+crypto+crc", "-mno-implicit-float", "-fPIC",
+            "-ffunction-sections", "-fdata-sections", "-fvisibility=hidden", "-fno-omit-frame-pointer", "-fno-exceptions", "-fstandalone-debug",
+            "-fno-rtti", "-fno-strict-aliasing", "-std=c++17",
+            "-Wall", "-Wextra", "-Wno-unused-parameter", "-Wno-invalid-offsetof",
+            "-Wno-unused-command-line-argument"],
+  "note": "Identified compiler (docs/research/07-compiler-id.md): official clang 9.0.0, 524/533 Lua 5.3.4 functions byte for byte. -fno-omit-frame-pointer comes from the pilot with game code (7/16 O). PGO suspected: cold functions (4-aligned) may need __attribute__((cold))."
+}

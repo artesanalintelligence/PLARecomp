@@ -1,0 +1,12 @@
+; Own import library (port's portable toolchain): only the names used by the emitted C.
+LIBRARY vcruntime140.dll
+EXPORTS
+    memcpy
+    memset
+    memcmp
+    memmove
+    memchr
+    strchr
+    strrchr
+    strstr
+    __C_specific_handler

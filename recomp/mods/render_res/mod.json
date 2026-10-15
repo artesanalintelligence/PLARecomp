@@ -1,0 +1,32 @@
+{
+  "id": "render_res",
+  "name": "Configurable internal resolution (supersampling) and dynamic resolution",
+  "version": "1.0.0",
+  "title_id": "01001F5010DFA000",
+  "build_id": "AEE8F150DDA1B5A838806E1A5EA6827AD9F3C51E",
+  "library": "render_res.dll",
+  "enabled": true,
+  "hooks": [
+    { "module": "main", "offset": "0x2779fd8", "pre": "rr_framework",
+      "comment": "return from main+0x277bd2c: framework config at sp+0x20, width/height at +0x18/+0x20 (site 0x277bd44/50)" },
+    { "module": "main", "offset": "0x2a8c3e8", "pre": "rr_gfxmem",
+      "comment": "creates the graphics memory reserves; enlarges the render target one (flags 0xa1) according to the area" },
+    { "module": "main", "offset": "0x29e9a38", "pre": "rr_mode_table",
+      "comment": "{handheld,docked} table at x21+0x3f0 (width) and +0x3f8 (height) (site 0x29e99e8/f4)" },
+    { "module": "main", "offset": "0x29f0440", "pre": "rr_rt_a",
+      "comment": "RT descriptor at x29-0xc0 (site 0x29f0410/14)" },
+    { "module": "main", "offset": "0x29f067c", "pre": "rr_rt_b",
+      "comment": "RT descriptor at x29-0xc0 (site 0x29f0650/54)" },
+    { "module": "main", "offset": "0x2b9a638", "pre": "rr_rt_c",
+      "comment": "RT descriptor at x19+0x7e8 (site 0x2b9a5fc/604)" },
+    { "module": "main", "offset": "0x29eaba8", "pre": "rr_screen_size",
+      "comment": "FUN_29eaba8: screen size from the mode table (startup, console mode change, live resolution change)" },
+    { "module": "main", "offset": "0xcc35a4", "pre": "rr_dyn_update",
+      "comment": "per-frame Update of the dynamic resolution controller (dynamic_res=false: forced mode 7)" },
+    { "module": "main", "offset": "0xcc3888", "pre": "rr_dyn_apply",
+      "comment": "Apply of the dynamic resolution mode (dynamic_res=false: forced mode 7 = scale 1.0)" },
+    { "module": "main", "offset": "0x2b9ee64", "pre": "rr_res_scale",
+      "comment": "FUN_2b9e9a0: ResolutionWidth/Height at sp+0x20/+0x58 -> scene constant (w/1920, h/1080); rescaled to the RT size" }
+  ],
+  "config": {"width": "1920", "height": "1080", "dynamic_res": "true", "reserve_width": "0"}
+}

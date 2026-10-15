@@ -1,0 +1,5 @@
+// nvnvk.dll resources: in-game menu fonts (Lato, SIL Open Font License 1.1; see third_party/fonts/lato/OFL.txt).
+#include "overlay_res.h"
+kResLatoRegular RCDATA "@NVNVK_LATO_DIR@/Lato-Regular.ttf"
+kResLatoBold RCDATA "@NVNVK_LATO_DIR@/Lato-Bold.ttf"
+kResLatoBlack RCDATA "@NVNVK_LATO_DIR@/Lato-Black.ttf"

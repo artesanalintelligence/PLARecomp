@@ -1,0 +1,9 @@
+# nx-decomp-tools configuration (viking: tools/bin/check.exe, listsym.exe, decompme.exe)
+functions_csv = "data/main_functions.csv"
+build_target = "pla"
+# Calls to functions not yet decompiled end up in the PLT of the shared ELF.
+check_unimplemented_references = false
+
+[decomp_me]
+compiler_name = "clang-9.0.0"  # PROVISIONAL: compiler not yet identified
+default_compile_flags = "-x c++ -O3 -g2 -std=c++17 -fno-rtti -fno-exceptions -fno-strict-aliasing -mcpu=cortex-a57"

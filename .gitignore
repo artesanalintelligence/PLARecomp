@@ -1,0 +1,89 @@
+# PLARecomp .gitignore
+# Policy: the public repo contains only our own code, tools and docs.
+# Anything taken from or derived from the game binary stays local: dumps, keys, extracted
+# executables, symbol/function lists, Ghidra projects and exports, triage outputs, address maps
+# with names and decompiled game code. The scripts that generate that material ARE published.
+
+# ---- Copyrighted game content: NEVER commit ----
+/dump/*
+!/dump/.gitkeep
+*.xci
+*.nsp
+*.nca
+*.nsz
+*.xcz
+*.nso
+prod.keys
+title.keys
+
+# ---- Data derived from the game binary (generated locally by tools/extract, tools/triage,
+#      tools/decomp and tools/ghidra) ----
+/data/
+/docs/port/data/
+
+# ---- Decompiled game code (matching/functional decomp): not published.
+#      The toolchain smoke test is ours and stays published. ----
+/src/*
+!/src/.gitkeep
+!/src/_smoke/
+/include/*
+!/include/.gitkeep
+# Pattern libraries of the decomp autogen: they embed game addresses and reconstructed names.
+/tools/decomp/autogen/patterns_lib*.py
+
+# ---- Analysis outputs (Ghidra / triage / decomp harness): derived from the binary ----
+/tools/ghidra/out/
+/tools/ghidra/projects/
+/tools/triage/out/
+/tools/triage/cache/
+/tools/decomp/cache/
+recomp_gaps.json
+
+# ---- Build outputs / downloaded tools ----
+/build/
+/toolchain/bin/
+/toolchain/cache/
+/tools/bin/
+/tools/analysis/tests/build/
+/tools/extract/tests/_build/
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+target/
+*.log
+
+# ---- recomp/: generated output (C, DLL, exports, logs) lives outside the repo ----
+/recomp/out/
+/recomp/logs/
+/recomp/**/*.dll
+/recomp/**/aot_cache/
+
+# ---- Generated from the game binary / SDK (regenerated locally by the tools that produce them) ----
+/recomp/mods/islands/islands_gen.inc
+/tools/port/nnshim/generated/
+/tools/port/nvnvk/generated/
+
+# ---- Internal docs (dev logs, research notes, handoffs): only user-facing docs are published ----
+/docs/
+/recomp/STATUS.md
+
+# ---- Internal test/QA tooling ----
+/tools/launcher/legacy-gui/
+/tools/port/qa/
+/tools/port/nnshim/field_drive.py
+/recomp/scripts/perf-tas/
+/recomp/scripts/send-key.ps1
+/recomp/scripts/click-suyu-button.ps1
+/recomp/scripts/list-suyu-dialogs.ps1
+/tools/port/nvnvk/tools/*_job.ps1
+/tools/port/nvnvk/enqueue-test.ps1
+/tools/port/nvnvk/run-test.ps1
+/tools/port/nnshim/romfs_ab.ps1
+/tools/port/nnshim/romfs_ab_report.py
+/tools/port/nnshim/pointer_job.ps1
+/tools/port/nnshim/run-ab.ps1
+/tools/port/nnshim/play-session.ps1
+/tools/toolchain/test-in-game.ps1
+/recomp/mods/*/*_scene_job.ps1
+/tools/port/nnshim/install-save.ps1
