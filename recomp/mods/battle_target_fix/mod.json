@@ -1,0 +1,18 @@
+{
+  "id": "battle_target_fix",
+  "name": "Fix for battle form changes (Judgment): the move sequence waits for the new model (freeze, invisible creature)",
+  "version": "1.0.0",
+  "title_id": "01001F5010DFA000",
+  "build_id": "AEE8F150DDA1B5A838806E1A5EA6827AD9F3C51E",
+  "library": "battle_target_fix.dll",
+  "enabled": true,
+  "hooks": [
+    { "module": "main", "offset": "0x9e2040", "pre": "btf_setmodel",
+      "comment": "battle actor SetModel; [x1]=0 from main+0x95ab1c (form change step) starts a gap" },
+    { "module": "main", "offset": "0x9dbeac", "pre": "btf_sequence",
+      "comment": "sequence player vtable_71040d3338::vf11: the sequence frame (+0xe8) is held while the gap lasts" },
+    { "module": "main", "offset": "0x953f4c", "pre": "btf_target",
+      "comment": "vtable_71040cb7e8::vf11, return from [x19+0x68]->vf(0x10): target smart pointer at x29-0x38, null at high FPS" }
+  ],
+  "config": {}
+}

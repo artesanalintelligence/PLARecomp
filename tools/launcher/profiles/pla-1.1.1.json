@@ -119,6 +119,7 @@
     },
     "mods_recomp": [
       "research_level_fix",
+      "battle_target_fix",
       "engine_options",
       "render_res"
     ],

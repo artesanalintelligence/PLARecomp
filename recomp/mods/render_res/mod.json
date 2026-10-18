@@ -19,6 +19,8 @@
       "comment": "RT descriptor at x29-0xc0 (site 0x29f0650/54)" },
     { "module": "main", "offset": "0x2b9a638", "pre": "rr_rt_c",
       "comment": "RT descriptor at x19+0x7e8 (site 0x2b9a5fc/604)" },
+    { "module": "main", "offset": "0x2ac011c", "pre": "rr_rt_frac",
+      "comment": "RT creator entry: fixed 960x540 / 480x270 effect RTs scaled with the internal resolution (viewport = screen / 2)" },
     { "module": "main", "offset": "0x29eaba8", "pre": "rr_screen_size",
       "comment": "FUN_29eaba8: screen size from the mode table (startup, console mode change, live resolution change)" },
     { "module": "main", "offset": "0xcc35a4", "pre": "rr_dyn_update",

@@ -11,6 +11,7 @@
  *   0x29F0410/14 mov w8/w9    render target descriptor (vf15)          0x29F0440         [x29-0xC0]/[x29-0xB8] (u64)
  *   0x29F0650/54 mov w8/w9    render target descriptor (vf15)          0x29F067C         [x29-0xC0]/[x29-0xB8] (u64)
  *   0x2B9A5FC/604 mov w8      render target descriptor                 0x2B9A638         [x19+0x7E8]/[x19+0x7F0] (u64)
+ *   (not in the Switch mod)   960x540 / 480x270 effect RTs (15 callers) 0x2AC011C (entry) [x1]/[x1+8] -> size / 2 or / 4
  *
  * Every rewrite first checks that the stored value is 1920x1080 (if not, it touches nothing and says
  * so in the log): this protects against a wrong context.
@@ -184,9 +185,11 @@ PLA_MOD_EXPORT pla_action rr_gfxmem(pla_ctx* ctx) {
     const uint64_t c = api->get_x(ctx, 1);
     const uint64_t area_pct = ((uint64_t)g_rw * g_rh * 100 + DEF_W * DEF_H - 1) / (DEF_W * DEF_H);
     uint64_t sz[3] = {0}, nv;
-    /* automatic: 100 % + 0.47 x (area - 100 %). Measured: 2560x1440 needs more than 250 MiB (with 445 nothing
-     * fails); 3840x2160 works with 600 MiB (240 %) and with 1000 MiB (400 %) the game heap runs out. */
-    long pct = g_rt_pool_pct >= 0 ? g_rt_pool_pct : (area_pct > 100 ? 100 + (long)(area_pct - 100) * 47 / 100 : 100);
+    /* automatic: 100 % + 0.62 x (area - 100 %). Measured: 2560x1440 needs more than 250 MiB (with 445 nothing
+     * fails); 3840x2160 works with 600 MiB (240 %) and with 1000 MiB (400 %) the game heap runs out. Since the
+     * half/quarter-resolution RTs are scaled too (rr_rt_frac), 2560x1440 fails at 340 MiB (136 %) and works at
+     * 363 MiB (145 %): the coefficient went from 0.47 to 0.62. */
+    long pct = g_rt_pool_pct >= 0 ? g_rt_pool_pct : (area_pct > 100 ? 100 + (long)(area_pct - 100) * 62 / 100 : 100);
     const long n = _InterlockedIncrement(&g_hits[9]);
     if (api->read_mem(ctx, c, sz, sizeof sz) != sizeof sz) return PLA_CONTINUE;
     if (n <= 4)
@@ -248,6 +251,40 @@ PLA_MOD_EXPORT pla_action rr_rt_b(pla_ctx* ctx) {
 PLA_MOD_EXPORT pla_action rr_rt_c(pla_ctx* ctx) {
     const uint64_t d = api->get_x(ctx, 19) + 0x7E8;
     patch_pair(ctx, 4, "RT (0x2B9A5FC)", d, d + 8, 8);
+    return PLA_CONTINUE;
+}
+
+/* main+0x2AC011C (entry of the RT creator; x1 = descriptor, +0 width, +8 height, u64; x30 = caller): the
+ * half/quarter-resolution effect RTs are fixed 960x540 / 480x270 descriptors, but the passes that draw into them set
+ * the viewport from the screen size / 2. With larger RTs left at 960x540, a 2560x1440 screen drew them with a
+ * 1280x720 viewport: their contents appeared at 4/3 of their position from the top-left corner, clipped (on the
+ * mountain peak, a glassy copy of the player's model below and to the right). They are scaled with the render target
+ * size. Matched by caller, not by size: RTs derived from the screen size also measure 960x540 at 3840x2160, and some
+ * descriptors are reused (a second creation already sees the scaled size and is left alone). Callers = every
+ * 960x540 / 480x270 creation logged by the probe at 2560x1440 (field, mountain peak). */
+static const struct { uint32_t ret; uint32_t div; } k_frac_sites[] = {
+    {0x29E1AFC, 2}, {0x29F08BC, 2}, {0x29F0944, 2}, {0x29F1954, 2}, {0x29F19D0, 2}, {0x29F1A50, 2}, {0x29F1AC8, 2},
+    {0x29F1B40, 2}, {0x29F2F70, 2}, {0x29F3030, 2}, {0x29F3814, 2},
+    {0x29F0D98, 4}, {0x29F525C, 4}, {0x2A00B08, 4}, {0x2A00C00, 4},
+};
+PLA_MOD_EXPORT pla_action rr_rt_frac(pla_ctx* ctx) {
+    const uint64_t d = api->get_x(ctx, 1), ret = api->get_x(ctx, 30) - g_main;
+    uint64_t wh[2] = {0};
+    uint32_t div = 0;
+    size_t i;
+    long n;
+    if (g_rw == DEF_W && g_rh == DEF_H) return PLA_CONTINUE;
+    for (i = 0; i < sizeof k_frac_sites / sizeof k_frac_sites[0]; ++i)
+        if (k_frac_sites[i].ret == ret) div = k_frac_sites[i].div;
+    if (!div || api->read_mem(ctx, d, wh, sizeof wh) != sizeof wh || wh[0] != DEF_W / div || wh[1] != DEF_H / div)
+        return PLA_CONTINUE;
+    n = _InterlockedIncrement(&g_hits[10]);
+    wh[0] = g_rw / div;
+    wh[1] = g_rh / div;
+    api->write_mem(ctx, d, wh, sizeof wh);
+    if (n <= 8) logf_(PLA_LOG_INFO, "render_res: RT 1/%u (from main+%#llx): %ux%u -> %llux%llu (call %ld)", div,
+                       (unsigned long long)ret, DEF_W / div, DEF_H / div, (unsigned long long)wh[0],
+                       (unsigned long long)wh[1], n);
     return PLA_CONTINUE;
 }
 
@@ -474,6 +511,6 @@ PLA_MOD_EXPORT pla_action rr_dyn_apply(pla_ctx* ctx) {
 
 PLA_MOD_EXPORT void pla_mod_shutdown(void) {
     if (!api) return;
-    logf_(PLA_LOG_INFO, "render_res: sites framework=%ld table=%ld rtA=%ld rtB=%ld rtC=%ld; dyn. Update=%ld Apply=%ld",
-          g_hits[0], g_hits[1], g_hits[2], g_hits[3], g_hits[4], g_hits[6], g_hits[7]);
+    logf_(PLA_LOG_INFO, "render_res: sites framework=%ld table=%ld rtA=%ld rtB=%ld rtC=%ld frac=%ld; dyn. Update=%ld Apply=%ld",
+          g_hits[0], g_hits[1], g_hits[2], g_hits[3], g_hits[4], g_hits[10], g_hits[6], g_hits[7]);
 }

@@ -64,7 +64,7 @@ SCRIPTS = [
     "recomp/scripts/env.ps1", "recomp/scripts/setup-portable-suyu.ps1", "recomp/scripts/stage-suyu-userdata.py",
     "recomp/scripts/export-pla.ps1", "recomp/scripts/check-baked-patches.py", "recomp/scripts/build-modules.ps1",
     "recomp/scripts/build-mod.ps1", "recomp/scripts/make-dist.ps1", "recomp/scripts/make-roots.py", "recomp/scripts/make-pla-exe.py",
-    "recomp/patches/unlocked-fps", "recomp/mods/research_level_fix", "recomp/mods/include", "recomp/dist/README.txt",
+    "recomp/patches/unlocked-fps", "recomp/mods/research_level_fix", "recomp/mods/battle_target_fix", "recomp/mods/include", "recomp/dist/README.txt",
     # islands is generated from the user's main.elf and compiled at install time (launcher.py build_local_mod):
     # its sources only, file by file (a local islands_gen.inc holds lifted game code and must never ship).
     "tools/islands/nlift.py", "tools/islands/build_islands.py", "recomp/mods/islands/islands.cpp",
@@ -72,7 +72,8 @@ SCRIPTS = [
 ]
 # Prebuilt recomp mods shipped in the platform package (build/mods-recomp/<id>): id -> folder under --mods-build with
 # the DLL; the mod.json (hooks + default config) comes from recomp/mods/<id>/mod.json.
-PREBUILT_MODS = {"research_level_fix": "research_level_fix", "engine_options": "engine_options-en", "render_res": "render_res-en"}
+PREBUILT_MODS = {"research_level_fix": "research_level_fix", "battle_target_fix": "battle_target_fix",
+                 "engine_options": "engine_options-en", "render_res": "render_res-en"}
 FORK_SCRIPTS = ["install-nsp.py", "nsp-extract.py", "mcp-call.py", "mcp.py"]
 FONT_SOURCES = ["font_standard.cpp", "font_chinese_simplified.cpp", "font_extended_chinese_simplified.cpp",
                 "font_chinese_traditional.cpp", "font_korean.cpp", "font_nintendo_extended.cpp"]
