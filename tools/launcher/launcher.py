@@ -339,6 +339,15 @@ def file_identity(p: Path) -> str:
     return f"{st.st_size}/{time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime(st.st_mtime))}"
 
 
+def file_sha(p: Path) -> str:
+    """Content hash of a patch file. Part of the bake fingerprint: a release whose patch JSON changed under the same
+    path would otherwise reuse the main baked with the old patches, and the export check then fails on it."""
+    try:
+        return hashlib.sha256(p.read_bytes()).hexdigest()[:16]
+    except OSError:
+        return "missing"
+
+
 # Emitter environment variable -> key the exporter writes into aot_manifest.json when the option took effect.
 EMITTER_MANIFEST_KEYS = {
     "SUYU_AOT_CHAIN": "chain", "SUYU_AOT_FPXV": "fpxv", "SUYU_AOT_FPXFZ": "fpxfz", "SUYU_AOT_FPXOOL": "fpxool",
@@ -614,6 +623,7 @@ def phases(ctx: Ctx) -> List[Phase]:
 
     # 4. bake the patches (unlocked FPS) into main (the exporter's input)
     L.append(Phase("bake", "Bake the patches into main", "cheap", [
+        Step(f"patch contents {' '.join(file_sha(REPO / p['json']) for p in P['baked_patches'])}", fn=lambda: None),
         Step("check original bytes", [PY, str(REPO / "tools/patch/apply_patches.py")] + patches + ["--in", str(ctx.data / "exefs/main"), "--check"]),
         Step("write baked main", [PY, str(REPO / "tools/patch/apply_patches.py")] + patches +
              ["--in", str(ctx.data / "exefs/main"), "--out", str(load_main), "--title-id", tid]),
