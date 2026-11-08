@@ -210,6 +210,12 @@ struct Info {
     uint64_t menu_drag_samples = 0;    // samples with a drag (left stick from the mouse)
     uint64_t overlay_samples = 0;      // samples with the nvnvk menu open (input blocked)
     uint64_t overlay_opens = 0;        // times the nvnvk menu was opened
+    // Controller diagnostics (log at exit).
+    uint64_t pad_button_samples = 0;     // samples with some controller button held (menu closed)
+    uint64_t pad_swallowed_samples = 0;  // of those, samples where a button held since the menu closed was ignored
+    uint64_t pad_held = 0;               // controller buttons held in the last sample
+    uint64_t pad_swallow = 0;            // buttons still ignored in the last sample
+    int trig_raw_min[2] = {0, 0}, trig_raw_max[2] = {0, 0}, trig_rest[2] = {0, 0};   // SDL trigger axes (L, R)
 };
 Info GetInfo();
 

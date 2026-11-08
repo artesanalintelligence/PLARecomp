@@ -349,6 +349,21 @@ bool TriggerDigital(int which, float value01) {
     return t.on;
 }
 
+// SDL trigger axes: lowest raw value seen since the controller was opened, taken as the rest position.
+// Some pads (seen with "Controller (XBOX 360 For Windows)") report a trigger resting near half range;
+// read as 0..32767 that sits right at the press threshold and ZL/ZR could stay held for the whole session.
+int g_trig_rest[2] = {0, 0};
+int g_trig_raw_min[2] = {0, 0}, g_trig_raw_max[2] = {0, 0};   // diagnostics (log at exit)
+
+float SdlTrigger(int which, int raw) {
+    if (raw < g_trig_rest[which]) g_trig_rest[which] = std::max(raw, 0);
+    g_trig_raw_min[which] = std::min(g_trig_raw_min[which], raw);
+    g_trig_raw_max[which] = std::max(g_trig_raw_max[which], raw);
+    const int rest = g_trig_rest[which];
+    if (rest >= 32767) return 0.0f;
+    return std::max(0, raw - rest) / static_cast<float>(32767 - rest);
+}
+
 bool PollSdl(PadRaw& p, std::string& dev) {
     Sdl& s = g_sdl;
     s.PumpEvents();
@@ -364,6 +379,11 @@ bool PollSdl(PadRaw& p, std::string& dev) {
         for (int i = 0; i < s.NumJoysticks() && !g_pad; ++i)
             if (s.IsGameController(i)) g_pad = s.GameControllerOpen(i);
         if (!g_pad) return false;
+        for (int t = 0; t < 2; ++t) {
+            const int raw = s.GameControllerGetAxis(g_pad, 4 + t);
+            g_trig_rest[t] = std::max(raw, 0);
+            g_trig_raw_min[t] = g_trig_raw_max[t] = raw;
+        }
         if (g_cfg.motion && s.GameControllerSetSensorEnabled) {
             s.GameControllerSetSensorEnabled(g_pad, kSdlSensorAccel, 1);
             s.GameControllerSetSensorEnabled(g_pad, kSdlSensorGyro, 1);
@@ -375,8 +395,8 @@ bool PollSdl(PadRaw& p, std::string& dev) {
                                       7, 8, 11 /*UP*/, 12 /*DOWN*/, 13 /*LEFT*/, 14 /*RIGHT*/};
     for (int e = 0; e < PeCount; ++e)
         if (kBtn[e] >= 0) p.elem[e] = s.GameControllerGetButton(g_pad, kBtn[e]) != 0;
-    p.elem[PeLT] = TriggerDigital(0, s.GameControllerGetAxis(g_pad, 4) / 32767.0f);
-    p.elem[PeRT] = TriggerDigital(1, s.GameControllerGetAxis(g_pad, 5) / 32767.0f);
+    p.elem[PeLT] = TriggerDigital(0, SdlTrigger(0, s.GameControllerGetAxis(g_pad, 4)));
+    p.elem[PeRT] = TriggerDigital(1, SdlTrigger(1, s.GameControllerGetAxis(g_pad, 5)));
     // SDL: up = negative; nn::hid: up = positive.
     p.lx = s.GameControllerGetAxis(g_pad, 0);
     p.ly = -s.GameControllerGetAxis(g_pad, 1);
@@ -585,7 +605,10 @@ std::atomic<OverlayFn> g_overlay_fn{nullptr};
 Clock::time_point g_overlay_probe{};
 bool g_overlay_prev = false;
 bool g_kb_swallow = false;    // after closing the menu: ignore the keyboard until all keys are released
-bool g_pad_swallow = false;   // same for the controller buttons
+// Controller buttons still held since the menu closed: only these are ignored, each one until it is released.
+// (A single flag for all of them let one button that never reads as released, such as a trigger resting past
+// the threshold, block the whole controller for the rest of the session.)
+uint64_t g_pad_swallow = 0;
 
 int OverlayState() {
     OverlayFn f = g_overlay_fn.load(std::memory_order_relaxed);
@@ -1049,6 +1072,7 @@ void PollOnce(int64_t dt_ns) {
 #ifdef _WIN32
     // Holding Minus + Plus on the controller opens the nvnvk menu: the game does not see that combo.
     if ((buttons & BtnPlus) && (buttons & BtnMinus)) buttons &= ~(uint64_t(BtnPlus) | uint64_t(BtnMinus));
+    const uint64_t pad_buttons = buttons;
     const bool overlay = (OverlayState() & 1) != 0;
     if (overlay) {
         // Menu open: the game receives nothing from the devices; the cursor is free and visible.
@@ -1057,16 +1081,16 @@ void PollOnce(int64_t dt_ns) {
         MouseRelease();
         g_mouse_wheel_accum = 0;
         g_mouse.swallow = true;   // the click that closes the menu does not reach the game
-        g_kb_swallow = g_pad_swallow = true;
+        g_kb_swallow = true;
+        g_pad_swallow = ~uint64_t(0);
     } else {
         if (g_overlay_prev) {
-            g_kb_swallow = g_pad_swallow = true;
+            g_kb_swallow = true;
+            g_pad_swallow = ~uint64_t(0);
             g_mouse.had_focus = false;   // recaptured as on regaining focus
         }
-        if (g_pad_swallow) {
-            if (buttons == 0) g_pad_swallow = false;
-            else buttons = 0;
-        }
+        g_pad_swallow &= buttons;
+        buttons &= ~g_pad_swallow;
         if (g_cfg.keyboard && (b == "auto" || b == "keyboard" || b == "xinput" || b == "sdl2") && KeyboardAllowed()) {
             uint64_t kb = 0;
             int32_t klx = lx, kly = ly, krx = rx, kry = ry;
@@ -1111,6 +1135,15 @@ void PollOnce(int64_t dt_ns) {
 #ifdef _WIN32
     if (g_overlay_prev) g_info.overlay_samples++;
     if (overlay_opened) g_info.overlay_opens++;
+    if (!overlay && pad_buttons) g_info.pad_button_samples++;
+    if (!overlay && (pad_buttons & g_pad_swallow)) g_info.pad_swallowed_samples++;
+    g_info.pad_held = pad_buttons;
+    g_info.pad_swallow = g_pad_swallow;
+    for (int t = 0; t < 2; ++t) {
+        g_info.trig_raw_min[t] = g_trig_raw_min[t];
+        g_info.trig_raw_max[t] = g_trig_raw_max[t];
+        g_info.trig_rest[t] = g_trig_rest[t];
+    }
 #endif
 #ifdef _WIN32
     g_info.mouse_captured = g_mouse.captured;

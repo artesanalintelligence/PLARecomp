@@ -258,6 +258,12 @@ void ShutdownHid() {
     CounterAdd("hid.overlay_opens", i.overlay_opens);
     Log(PLA_LOG_INFO, "nnshim: nvnvk menu opens=%llu blocked samples=%llu", static_cast<unsigned long long>(i.overlay_opens),
         static_cast<unsigned long long>(i.overlay_samples));
+    Log(PLA_LOG_INFO,
+        "nnshim: pad button samples=%llu swallowed=%llu held=0x%llx swallow=0x%llx triggers L raw %d..%d rest %d, "
+        "R raw %d..%d rest %d",
+        static_cast<unsigned long long>(i.pad_button_samples), static_cast<unsigned long long>(i.pad_swallowed_samples),
+        static_cast<unsigned long long>(i.pad_held), static_cast<unsigned long long>(i.pad_swallow), i.trig_raw_min[0],
+        i.trig_raw_max[0], i.trig_rest[0], i.trig_raw_min[1], i.trig_raw_max[1], i.trig_rest[1]);
     {
         std::lock_guard lk(g_style_mu);
         if (osev::Available())
