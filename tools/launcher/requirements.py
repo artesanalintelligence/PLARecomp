@@ -99,8 +99,11 @@ def check(profile: dict, work: Path, dest: Path, fork: Optional[Path], keys: Opt
     repo = Path(__file__).resolve().parents[2]
 
     # System
-    ok_os = platform.system() == "Windows" and platform.machine().endswith("64")
-    R.append(Req("Windows x64", ok_os, f"{platform.system()} {platform.release()} {platform.machine()}"))
+    # Build 17134 = Windows 10 1803: the game's memory emulation needs placeholder memory (VirtualAlloc2).
+    build = sys.getwindowsversion().build if hasattr(sys, "getwindowsversion") else 0
+    ok_os = platform.system() == "Windows" and platform.machine().endswith("64") and build >= 17134
+    R.append(Req("Windows x64", ok_os, f"{platform.system()} {platform.release()} build {build} {platform.machine()}", "",
+                 "" if ok_os else "64-bit Windows 10 version 1803 (build 17134) or later, or Windows 11, is required."))
     ram = ram_total()
     jobs = max(1, ram // (8 * GB)) if ram else 1
     R.append(Req("RAM", None if ram < 24 * GB else True,

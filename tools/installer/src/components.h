@@ -7,7 +7,7 @@
 // size, SHA-256, top folder, unpacked size and the blob offset. A "light" build has the index but no blobs: the
 // components are then taken from the download cache or fetched from url_base + file (fallback only).
 // If the .exe is Authenticode-signed, the certificate table follows the footer; the reader skips it.
-// Blobs are verified (SHA-256) and then streamed into Windows' own tar.exe (libarchive, xz support built in).
+// Blobs are verified (SHA-256) and then unpacked in-process (unpack.h), with no dependency on system tools.
 // SPDX-License-Identifier: MIT
 #pragma once
 #include <windows.h>

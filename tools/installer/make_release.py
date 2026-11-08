@@ -230,6 +230,7 @@ def stage_platform(work: Path, fork: Path, nnshim: Path, nvnvk: Path, mods_build
     copy(fork / "third_party/suyu/LICENSES", lic / "spdx")
     copy(REPO / "tools/port/nvnvk/third_party/imgui/LICENSE.txt", lic / "DearImGui-MIT.txt")
     copy(REPO / "tools/port/nvnvk/third_party/fonts/lato/OFL.txt", lic / "Lato-OFL-1.1.txt")
+    copy(REPO / "tools/installer/third_party/xz-embedded/COPYING", lic / "XZ-Embedded-0BSD.txt")
     copy(REPO / "tools/port/nvnshader/third_party/shader_recompiler/PROVENANCE.txt",
          lic / "nvnvk-shader-recompiler-PROVENANCE.txt")
     (lic / "NOTICE.txt").write_text(
@@ -251,7 +252,8 @@ def stage_platform(work: Path, fork: Path, nnshim: Path, nvnvk: Path, mods_build
         "                            nvnvk-shader-recompiler-PROVENANCE.txt)\n"
         "build/port/nnshim/SDL2.dll  SDL 2: Zlib (spdx/Zlib.txt)\n"
         "build/mods-recomp           own code of this project\n"
-        "Setup program               Dear ImGui (DearImGui-MIT.txt), Lato fonts (Lato-OFL-1.1.txt)\n"
+        "Setup program               Dear ImGui (DearImGui-MIT.txt), Lato fonts (Lato-OFL-1.1.txt),\n"
+        "                            XZ Embedded (XZ-Embedded-0BSD.txt)\n"
         "Python component            PSF-2.0 (python/LICENSE.txt) and the modules' own licenses (python/Lib/site-packages/*.dist-info)\n"
         "Toolchain component         LLVM: Apache-2.0 WITH LLVM-exception (recomp-toolchain/LICENSES)\n", encoding="utf-8")
     return d

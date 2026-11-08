@@ -76,11 +76,15 @@ New-Item -ItemType Directory -Force -Path $exefsOut | Out-Null
 foreach ($f in Get-ChildItem -LiteralPath (Join-Path $Export 'exefs') -File) {
     $to = Join-Path $exefsOut $f.Name
     if (Test-Path -LiteralPath $to) { Remove-Item -LiteralPath $to -Force }
+    $linked = $false
     if ($f.Length -gt 1GB -and ([IO.Path]::GetPathRoot($f.FullName) -eq [IO.Path]::GetPathRoot($to))) {
-        New-Item -ItemType HardLink -Path $to -Target $f.FullName | Out-Null
-    } else {
-        Copy-Item -LiteralPath $f.FullName -Destination $to
+        # Hard links need NTFS (not FAT32/exFAT drives): fall back to a copy.
+        try {
+            New-Item -ItemType HardLink -Path $to -Target $f.FullName -ErrorAction Stop | Out-Null
+            $linked = $true
+        } catch { Write-Warning "hard link not possible on this drive ($($_.Exception.Message)); copying $($f.Name)" }
     }
+    if (-not $linked) { Copy-Item -LiteralPath $f.FullName -Destination $to }
 }
 if (-not (Test-Path (Join-Path $exefsOut 'romfs.bin'))) { Write-Warning 'the export has no romfs.bin (was it exported with -DropRomfs?)' }
 

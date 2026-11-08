@@ -1,0 +1,4 @@
+XZ Embedded (xz/LZMA2 decoder), https://github.com/tukaani-project/xz-embedded
+Commit ae63ae3a36ed01724674e8f3d750dc47bf125410 (2024-12-30), license 0BSD (COPYING).
+Files copied unmodified from linux/include/linux, linux/lib/xz and userspace/xz_config.h.
+Built through tools/installer/src/xz_unpack.c (enables CRC64 and the x86 BCJ filter).

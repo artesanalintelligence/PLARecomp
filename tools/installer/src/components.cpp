@@ -12,6 +12,7 @@
 
 #include "engine.h"
 #include "json_min.h"
+#include "unpack.h"
 
 namespace setup {
 
@@ -390,60 +391,12 @@ bool Preparer::Prepare(const Component& c, const std::wstring& comp_dir, const s
         if (!c.embedded) DeleteFileW(src.c_str());
         return fail(c.embedded ? "the setup file is damaged (SHA-256 mismatch); download it again" : "cached file is damaged; it will be downloaded again");
     }
-    // 3. Unpack: stream the archive into %SystemRoot%\System32\tar.exe (xz support is built into Windows' bsdtar).
+    // 3. Unpack in-process (unpack.cpp): no dependency on the xz support of the Windows build's tar.exe.
     SetStage(c.name, "unpacking", c.size);
     if (!MakeDirs(comp_dir)) return fail("cannot create " + U8(comp_dir));
     DeleteFileW(StatePath(comp_dir, c).c_str());
-    const std::wstring tar = Join(KnownFolder(CSIDL_SYSTEM), L"tar.exe");
-    std::wstring cmd = QuoteArg(tar) + L" -xf - -C " + QuoteArg(comp_dir);
-    SECURITY_ATTRIBUTES sa{sizeof sa, nullptr, TRUE};
-    HANDLE rd, wr;
-    if (!CreatePipe(&rd, &wr, &sa, 1 << 20)) return fail("CreatePipe failed");
-    SetHandleInformation(wr, HANDLE_FLAG_INHERIT, 0);
-    STARTUPINFOW si{sizeof si};
-    si.dwFlags = STARTF_USESTDHANDLES;
-    si.hStdInput = rd;
-    si.hStdOutput = GetStdHandle(STD_OUTPUT_HANDLE);
-    si.hStdError = GetStdHandle(STD_ERROR_HANDLE);
-    HANDLE job = CreateJobObjectW(nullptr, nullptr);
-    JOBOBJECT_EXTENDED_LIMIT_INFORMATION li{};
-    li.BasicLimitInformation.LimitFlags = JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE;
-    SetInformationJobObject(job, JobObjectExtendedLimitInformation, &li, sizeof li);
-    PROCESS_INFORMATION pi{};
-    if (!CreateProcessW(nullptr, cmd.data(), nullptr, nullptr, TRUE, CREATE_NO_WINDOW | CREATE_SUSPENDED, nullptr, nullptr, &si, &pi)) {
-        CloseHandle(rd);
-        CloseHandle(wr);
-        CloseHandle(job);
-        return fail(Fmt("cannot run tar.exe (error %lu); Windows 10 1803 or later is required", GetLastError()));
-    }
-    AssignProcessToJobObject(job, pi.hProcess);
-    ResumeThread(pi.hThread);
-    CloseHandle(pi.hThread);
-    CloseHandle(rd);
-    bool ok = true;
-    {
-        File f(src);
-        std::vector<char> buf(1 << 20);
-        uint64_t left = c.size;
-        while (left && ok) {
-            if (cancel_.load()) { ok = false; break; }
-            const DWORD n = (DWORD)std::min<uint64_t>(left, buf.size());
-            if (!f.ReadAt(off + (c.size - left), buf.data(), n)) { ok = false; break; }
-            DWORD w = 0;
-            if (!WriteFile(wr, buf.data(), n, &w, nullptr) || w != n) { ok = false; break; }
-            left -= n;
-            done_ += n;
-        }
-    }
-    CloseHandle(wr);
-    if (!ok) TerminateJobObject(job, 1);
-    WaitForSingleObject(pi.hProcess, INFINITE);
-    DWORD code = 1;
-    GetExitCodeProcess(pi.hProcess, &code);
-    CloseHandle(pi.hProcess);
-    CloseHandle(job);
-    if (!ok) return fail(cancel_.load() ? "cancelled" : "unpacking was interrupted");
-    if (code != 0) return fail(Fmt("tar.exe failed (exit %lu)", code));
+    std::string err;
+    if (!UnpackTarXz(src, off, c.size, comp_dir, done_, cancel_, err)) return fail(cancel_.load() ? "cancelled" : "unpacking failed: " + err);
     if (!IsDir(Join(comp_dir, W(c.root)))) return fail("unpacked files are missing");
     MakeDirs(Join(comp_dir, L".state"));
     HANDLE st = CreateFileW(StatePath(comp_dir, c).c_str(), GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, 0, nullptr);

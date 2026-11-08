@@ -68,9 +68,9 @@ written outside the repository or into gitignored folders.
 
 - This repository's own code and docs: GNU GPL v3.0 or later, see [LICENSE](LICENSE).
 - The recompiler/runtime fork and its emulator base are GPL-3.0-or-later; the release bundles
-  third-party components (Qt under LGPL, SDL2 under Zlib, Dear ImGui under MIT, the Lato font
-  under OFL, LLVM under Apache-2.0 with LLVM exception, Python under PSF-2.0) with their license
-  texts.
+  third-party components (Qt under LGPL, SDL2 under Zlib, Dear ImGui under MIT, XZ Embedded under
+  0BSD, the Lato font under OFL, LLVM under Apache-2.0 with LLVM exception, Python under PSF-2.0)
+  with their license texts.
 - Every release that ships the exporter binary also ships its complete corresponding source
   (`plarecomp-exporter-source-<version>.tar.xz`, on the same release page), as the GPL requires.
 - Submodules `toolchain/musl` and `tools/common` keep their own licenses.

@@ -35,6 +35,49 @@ using Microsoft::WRL::ComPtr;
 
 namespace {
 
+// Per-monitor DPI functions exist from Windows 10 1607/1703 on: looked up at run time so the .exe still starts on
+// older builds (and reaches the version message below) instead of failing with "entry point not found".
+template <typename F>
+F User32(const char* name) {
+    return reinterpret_cast<F>(reinterpret_cast<void*>(GetProcAddress(GetModuleHandleW(L"user32.dll"), name)));
+}
+
+UINT ScreenDpi() {
+    HDC dc = GetDC(nullptr);
+    const int d = dc ? GetDeviceCaps(dc, LOGPIXELSY) : 96;
+    if (dc) ReleaseDC(nullptr, dc);
+    return d > 0 ? (UINT)d : 96;
+}
+
+UINT WindowDpi(HWND h) {
+    static const auto f = User32<UINT(WINAPI*)(HWND)>("GetDpiForWindow");
+    const UINT d = f ? f(h) : 0;
+    return d ? d : ScreenDpi();
+}
+
+UINT SystemDpi() {
+    static const auto f = User32<UINT(WINAPI*)()>("GetDpiForSystem");
+    const UINT d = f ? f() : 0;
+    return d ? d : ScreenDpi();
+}
+
+void AdjustRectForDpi(RECT* r, DWORD style, UINT dpi) {
+    static const auto f = User32<BOOL(WINAPI*)(RECT*, DWORD, BOOL, DWORD, UINT)>("AdjustWindowRectExForDpi");
+    if (!f || !f(r, style, FALSE, 0, dpi)) AdjustWindowRectEx(r, style, FALSE, 0);
+}
+
+// Windows build number (RtlGetVersion is not subject to the manifest-based version lie).
+DWORD WindowsBuild() {
+    using RtlGetVersionFn = LONG(WINAPI*)(OSVERSIONINFOW*);
+    const auto f = reinterpret_cast<RtlGetVersionFn>(reinterpret_cast<void*>(GetProcAddress(GetModuleHandleW(L"ntdll.dll"), "RtlGetVersion")));
+    OSVERSIONINFOW v{sizeof v};
+    if (!f || f(&v) != 0) return 0;
+    return v.dwMajorVersion >= 10 ? v.dwBuildNumber : 0;
+}
+
+// The game's memory emulation needs placeholder memory (VirtualAlloc2), new in Windows 10 1803 (build 17134).
+constexpr DWORD kMinBuild = 17134;
+
 ComPtr<ID3D11Device> g_dev;
 ComPtr<ID3D11DeviceContext> g_ctx;
 ComPtr<IDXGISwapChain> g_sc;
@@ -144,10 +187,10 @@ LRESULT CALLBACK WndProc(HWND h, UINT m, WPARAM w, LPARAM l) {
         g_rh = HIWORD(l);
         return 0;
     case WM_GETMINMAXINFO: {
-        const UINT dpi = GetDpiForWindow(h);
+        const UINT dpi = WindowDpi(h);
         auto* mm = (MINMAXINFO*)l;
-        mm->ptMinTrackSize.x = MulDiv(960, dpi ? dpi : 96, 96);
-        mm->ptMinTrackSize.y = MulDiv(620, dpi ? dpi : 96, 96);
+        mm->ptMinTrackSize.x = MulDiv(960, dpi, 96);
+        mm->ptMinTrackSize.y = MulDiv(620, dpi, 96);
         return 0;
     }
     case WM_DPICHANGED: {
@@ -205,10 +248,20 @@ std::wstring SizeArg() {
 }  // namespace
 
 int WINAPI wWinMain(HINSTANCE inst, HINSTANCE, PWSTR, int) {
-    SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
+    // The manifest already asks for PerMonitorV2; this covers builds that ignore that manifest entry.
+    if (const auto f = User32<BOOL(WINAPI*)(DPI_AWARENESS_CONTEXT)>("SetProcessDpiAwarenessContext"))
+        f(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
     CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED);
     ParseArgs();
     const bool capture = !g_op.capture.empty();
+    if (const DWORD build = WindowsBuild(); build < kMinBuild && !capture) {
+        wchar_t msg[256];
+        swprintf_s(msg, L"PLARecomp needs 64-bit Windows 10 version 1803 (build %lu) or later, or Windows 11.\n\n"
+                        L"This PC runs %s. Please update Windows and run the setup again.",
+                   kMinBuild, build ? (L"build " + std::to_wstring(build)).c_str() : L"an older Windows version");
+        MessageBoxW(nullptr, msg, L"PLARecomp Setup", MB_ICONERROR);
+        return 1;
+    }
     if (capture) setup::MakeDirs(g_op.capture);
 
     WNDCLASSEXW wc{sizeof wc};
@@ -226,13 +279,13 @@ int WINAPI wWinMain(HINSTANCE inst, HINSTANCE, PWSTR, int) {
     HMONITOR mon = MonitorFromPoint(pt, MONITOR_DEFAULTTOPRIMARY);
     MONITORINFO mi{sizeof mi};
     GetMonitorInfoW(mon, &mi);
-    const UINT dpi = capture ? 96 : GetDpiForSystem();
+    const UINT dpi = capture ? 96 : SystemDpi();
     int cw = MulDiv(1280, dpi, 96), ch = MulDiv(800, dpi, 96);
     const std::wstring sz = SizeArg();
     if (!sz.empty()) swscanf_s(sz.c_str(), L"%dx%d", &cw, &ch);
     const DWORD style = WS_OVERLAPPEDWINDOW;
     RECT r{0, 0, cw, ch};
-    AdjustWindowRectExForDpi(&r, style, FALSE, 0, dpi);
+    AdjustRectForDpi(&r, style, dpi);
     int ww = r.right - r.left, wh = r.bottom - r.top;
     const int aw = mi.rcWork.right - mi.rcWork.left, ah = mi.rcWork.bottom - mi.rcWork.top;
     int x, y;
@@ -249,7 +302,10 @@ int WINAPI wWinMain(HINSTANCE inst, HINSTANCE, PWSTR, int) {
     HWND hwnd = CreateWindowExW(capture ? WS_EX_TOOLWINDOW : 0, wc.lpszClassName, L"PLARecomp Setup",
                                 style, x, y, ww, wh, nullptr, nullptr, inst, nullptr);
     const BOOL dark = TRUE;
-    DwmSetWindowAttribute(hwnd, 20 /* DWMWA_USE_IMMERSIVE_DARK_MODE */, &dark, sizeof dark);
+    // Dark title bar: attribute 20 from Windows 10 20H1, 19 on 1809-1909. The caption color (35) is Windows 11 only;
+    // older builds reject what they do not know and keep the default bar.
+    if (FAILED(DwmSetWindowAttribute(hwnd, 20 /* DWMWA_USE_IMMERSIVE_DARK_MODE */, &dark, sizeof dark)))
+        DwmSetWindowAttribute(hwnd, 19, &dark, sizeof dark);
     const COLORREF caption = RGB(18, 14, 28);
     DwmSetWindowAttribute(hwnd, 35 /* DWMWA_CAPTION_COLOR */, &caption, sizeof caption);
 

@@ -10,6 +10,7 @@ $repo = (Resolve-Path (Join-Path $here '..\..')).Path
 $imgui = Join-Path $repo 'tools\port\nvnvk\third_party\imgui'
 $lato = Join-Path $repo 'tools\port\nvnvk\third_party\fonts\lato'
 $dx11 = Join-Path $here 'third_party\imgui_dx11'
+$xz = Join-Path $here 'third_party\xz-embedded'
 
 $vcvars = $env:MK8R_VCVARS
 if (-not $vcvars) {
@@ -41,13 +42,13 @@ $rcPath = Join-Path $obj 'setup.rc'
 [IO.File]::WriteAllText($rcPath, $rc, (New-Object Text.UTF8Encoding $false))
 
 $exe = Join-Path $Out 'PLARecompSetup.exe'
-$src = @('main.cpp', 'app.cpp', 'ui.cpp', 'engine.cpp', 'components.cpp') | ForEach-Object { Join-Path $here "src\$_" }
+$src = @('main.cpp', 'app.cpp', 'ui.cpp', 'engine.cpp', 'components.cpp', 'unpack.cpp', 'xz_unpack.c') | ForEach-Object { Join-Path $here "src\$_" }
 $src += @((Join-Path $imgui 'imgui.cpp'), (Join-Path $imgui 'imgui_draw.cpp'), (Join-Path $imgui 'imgui_tables.cpp'),
     (Join-Path $imgui 'imgui_widgets.cpp'), (Join-Path $imgui 'backends\imgui_impl_win32.cpp'), (Join-Path $dx11 'imgui_impl_dx11.cpp'))
 $opt = if ($Debug) { '/Od /Zi /MTd' } else { '/O2 /Gy /Gw /MT /DNDEBUG' }
 $cl = "cl /nologo /std:c++20 /EHsc /utf-8 /W3 /MP $opt /DUNICODE /D_UNICODE /DNOMINMAX /D_CRT_SECURE_NO_WARNINGS " +
       "/DIMGUI_DISABLE_DEMO_WINDOWS /DIMGUI_DISABLE_DEBUG_TOOLS " +
-      "/I`"$here\src`" /I`"$imgui`" /I`"$imgui\backends`" /I`"$dx11`" /Fo`"$obj\\`" /Fe`"$exe`" " +
+      "/I`"$here\src`" /I`"$imgui`" /I`"$imgui\backends`" /I`"$dx11`" /I`"$xz`" /Fo`"$obj\\`" /Fe`"$exe`" " +
       (($src | ForEach-Object { "`"$_`"" }) -join ' ') + " `"$obj\setup.res`" " +
       "/link /SUBSYSTEM:WINDOWS /MANIFEST:NO /OPT:REF /OPT:ICF d3d11.lib dxgi.lib d3dcompiler.lib dwmapi.lib windowscodecs.lib " +
       "ole32.lib shell32.lib user32.lib gdi32.lib uuid.lib imm32.lib bcrypt.lib winhttp.lib"
