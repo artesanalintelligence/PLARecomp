@@ -143,7 +143,11 @@ bool g_initialized = false;
 Sdl g_sdl;
 void* g_pad = nullptr;
 int g_xinput_slot = -1;
-Clock::time_point g_last_probe{};
+// One probe timer per backend: with a shared one, an SDL probe that finds nothing (an XInput
+// pad SDL does not list as a game controller) reset it right before the XInput probe every
+// second, so the XInput fallback never ran.
+Clock::time_point g_sdl_last_probe{};
+Clock::time_point g_xinput_last_probe{};
 #ifdef _WIN32
 SOCKET g_sock = INVALID_SOCKET;
 #endif
@@ -355,8 +359,8 @@ bool PollSdl(PadRaw& p, std::string& dev) {
     }
     if (!g_pad) {
         const auto now = Clock::now();
-        if (now - g_last_probe < std::chrono::seconds(1)) return false;
-        g_last_probe = now;
+        if (now - g_sdl_last_probe < std::chrono::seconds(1)) return false;
+        g_sdl_last_probe = now;
         for (int i = 0; i < s.NumJoysticks() && !g_pad; ++i)
             if (s.IsGameController(i)) g_pad = s.GameControllerOpen(i);
         if (!g_pad) return false;
@@ -402,8 +406,8 @@ bool PollSdl(PadRaw& p, std::string& dev) {
 bool PollXInput(PadRaw& p, std::string& dev) {
     const auto now = Clock::now();
     if (g_xinput_slot < 0) {
-        if (now - g_last_probe < std::chrono::seconds(1)) return false;
-        g_last_probe = now;
+        if (now - g_xinput_last_probe < std::chrono::seconds(1)) return false;
+        g_xinput_last_probe = now;
         for (DWORD i = 0; i < XUSER_MAX_COUNT; ++i) {
             XINPUT_STATE st{};
             if (XInputGetState(i, &st) == ERROR_SUCCESS) {
