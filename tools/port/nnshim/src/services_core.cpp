@@ -431,7 +431,28 @@ namespace {
 struct DlgState {
     const Request* req;
     std::wstring result;
+    const char* closed_by = "unknown";
 };
+
+// The dialog runs on a game thread, not on the thread that owns the game window, so
+// SetForegroundWindow alone is usually refused by Windows (foreground lock) and the window
+// opens behind a fullscreen game without keyboard focus. Attaching to the foreground
+// thread's input queue for the call lets it take the foreground.
+void ForceForeground(HWND h) {
+    SetWindowPos(h, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_SHOWWINDOW);
+    const HWND fg = GetForegroundWindow();
+    const DWORD self = GetCurrentThreadId();
+    const DWORD other = fg ? GetWindowThreadProcessId(fg, nullptr) : 0;
+    const bool attach = other && other != self && AttachThreadInput(self, other, TRUE);
+    BringWindowToTop(h);
+    SetForegroundWindow(h);
+    SetActiveWindow(h);
+    if (attach) AttachThreadInput(self, other, FALSE);
+    if (GetForegroundWindow() != h) {
+        FLASHWINFO fi{sizeof fi, h, FLASHW_ALL | FLASHW_TIMERNOFG, 0, 0};
+        FlashWindowEx(&fi);
+    }
+}
 
 void Align4(std::vector<WORD>& t) {
     if (t.size() % 2) t.push_back(0);
@@ -467,10 +488,22 @@ INT_PTR CALLBACK DlgProc(HWND h, UINT msg, WPARAM wp, LPARAM lp) {
         const std::wstring init(st->req->initial.begin(), st->req->initial.end());
         SetWindowTextW(edit, init.c_str());
         SendMessageW(edit, EM_SETSEL, 0, -1);
-        SetForegroundWindow(h);
+        ForceForeground(h);
         SetFocus(edit);
+        // Retry once the dialog is shown: a fullscreen game can take the foreground back.
+        SetTimer(h, 1, 300, nullptr);
         return FALSE;
     }
+    case WM_TIMER:
+        if (wp == 1) {
+            KillTimer(h, 1);
+            if (GetForegroundWindow() != h) {
+                ForceForeground(h);
+                SetFocus(GetDlgItem(h, 100));
+            }
+            return TRUE;
+        }
+        break;
     case WM_COMMAND:
         if (LOWORD(wp) == IDOK) {
             wchar_t buf[1024] = {};
@@ -480,10 +513,12 @@ INT_PTR CALLBACK DlgProc(HWND h, UINT msg, WPARAM wp, LPARAM lp) {
                 return TRUE;
             }
             st->result = buf;
+            st->closed_by = "OK";
             EndDialog(h, IDOK);
             return TRUE;
         }
         if (LOWORD(wp) == IDCANCEL) {
+            st->closed_by = lp ? "Cancel button" : "Esc or window close";
             EndDialog(h, IDCANCEL);
             return TRUE;
         }
@@ -494,7 +529,7 @@ INT_PTR CALLBACK DlgProc(HWND h, UINT msg, WPARAM wp, LPARAM lp) {
 
 } // namespace
 
-bool Prompt(const Request& r, std::u16string& text) {
+bool Prompt(const Request& r, std::u16string& text, std::string* how) {
     std::wstring header(r.header.begin(), r.header.end());
     std::wstring sub(r.sub.begin(), r.sub.end());
     std::wstring guide(r.guide.begin(), r.guide.end());
@@ -504,6 +539,7 @@ bool Prompt(const Request& r, std::u16string& text) {
     std::vector<WORD> t;
     DLGTEMPLATE d{};
     d.style = DS_MODALFRAME | DS_CENTER | DS_SETFONT | DS_SETFOREGROUND | WS_POPUP | WS_CAPTION | WS_SYSMENU;
+    d.dwExtendedStyle = WS_EX_TOPMOST;
     d.cdit = 4;
     d.cx = 240;
     d.cy = 78;
@@ -519,14 +555,29 @@ bool Prompt(const Request& r, std::u16string& text) {
     PushItem(t, BS_DEFPUSHBUTTON | WS_TABSTOP, 129, 56, 50, 14, IDOK, 0x80, L"OK");
     PushItem(t, BS_PUSHBUTTON | WS_TABSTOP, 183, 56, 50, 14, IDCANCEL, 0x80, L"Cancel");
     DlgState st{&r, {}};
-    const INT_PTR rc = DialogBoxIndirectParamW(GetModuleHandleW(nullptr), reinterpret_cast<LPCDLGTEMPLATEW>(t.data()),
-                                               static_cast<HWND>(r.owner), DlgProc, reinterpret_cast<LPARAM>(&st));
+    HWND owner = static_cast<HWND>(r.owner);
+    if (owner && !IsWindow(owner)) owner = nullptr;
+    INT_PTR rc = DialogBoxIndirectParamW(GetModuleHandleW(nullptr), reinterpret_cast<LPCDLGTEMPLATEW>(t.data()), owner,
+                                         DlgProc, reinterpret_cast<LPARAM>(&st));
+    std::string note;
+    if ((rc == -1 || rc == 0) && owner) {
+        note = "window failed with owner (error " + std::to_string(GetLastError()) + "), retried without; ";
+        rc = DialogBoxIndirectParamW(GetModuleHandleW(nullptr), reinterpret_cast<LPCDLGTEMPLATEW>(t.data()), nullptr,
+                                     DlgProc, reinterpret_cast<LPARAM>(&st));
+    }
+    if (rc == -1 || rc == 0) note += "window could not be created (error " + std::to_string(GetLastError()) + ")";
+    else note += std::string("closed by ") + st.closed_by;
+    if (owner) SetForegroundWindow(owner);
+    if (how) *how = note;
     if (rc != IDOK) return false;
     text.assign(st.result.begin(), st.result.end());
     return true;
 }
 #else
-bool Prompt(const Request&, std::u16string&) { return false; }
+bool Prompt(const Request&, std::u16string&, std::string* how) {
+    if (how) *how = "no text window on this platform";
+    return false;
+}
 #endif
 } // namespace swkbd
 

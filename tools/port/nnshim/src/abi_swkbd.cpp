@@ -63,6 +63,7 @@ NNSHIM_ADAPTER(Swkbd, nnshim_swkbd_ShowKeyboard) {
         r.initial = s;
     }
     std::u16string text;
+    std::string how;
     bool ok;
     if (g_sk.mode == "auto") {
         text = Utf8ToUtf16(g_sk.auto_text);
@@ -71,11 +72,13 @@ NNSHIM_ADAPTER(Swkbd, nnshim_swkbd_ShowKeyboard) {
     } else if (g_sk.mode == "cancel") {
         ok = false;
     } else {
-        ok = swkbd::Prompt(r, text);
+        Log(PLA_LOG_INFO, "nnshim: swkbd \"%s\" opening text window (owner %p, length %d-%d)",
+            Utf16ToUtf8(r.header).c_str(), r.owner, r.min_length, r.max_length);
+        ok = swkbd::Prompt(r, text, &how);
     }
     if (static_cast<int>(text.size()) > r.max_length) text.resize(static_cast<size_t>(r.max_length));
-    Log(PLA_LOG_INFO, "nnshim: swkbd \"%s\" -> %s \"%s\"", Utf16ToUtf8(r.header).c_str(), ok ? "accepted" : "cancelled",
-        Utf16ToUtf8(text).c_str());
+    Log(PLA_LOG_INFO, "nnshim: swkbd \"%s\" -> %s \"%s\" (%s)", Utf16ToUtf8(r.header).c_str(),
+        ok ? "accepted" : "cancelled", Utf16ToUtf8(text).c_str(), how.empty() ? g_sk.mode.c_str() : how.c_str());
     Trace("swkbd %s", ok ? Utf16ToUtf8(text).c_str() : "(cancelled)");
     if (!ok) {
         g.ret(kResultCanceled);

@@ -122,8 +122,9 @@ struct Request {
     bool password = false;
     void* owner = nullptr;   // game window (HWND), if the runtime provides it
 };
-// true = accepted (text = result), false = cancelled.
-bool Prompt(const Request& r, std::u16string& text);
+// true = accepted (text = result), false = cancelled. `how` (optional) receives a short
+// description of how the window ended, for the log.
+bool Prompt(const Request& r, std::u16string& text, std::string* how = nullptr);
 } // namespace swkbd
 
 namespace font {
