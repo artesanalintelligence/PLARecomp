@@ -339,6 +339,14 @@ def file_identity(p: Path) -> str:
     return f"{st.st_size}/{time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime(st.st_mtime))}"
 
 
+def dir_identity(d: Path) -> str:
+    """file_identity of every file under a folder, folded into one short hash."""
+    h = hashlib.sha256()
+    for p in sorted(x for x in d.rglob("*") if x.is_file()):
+        h.update(f"{p.relative_to(d).as_posix()}={file_identity(p)};".encode())
+    return h.hexdigest()[:12]
+
+
 def file_sha(p: Path) -> str:
     """Content hash of a patch file. Part of the bake fingerprint: a release whose patch JSON changed under the same
     path would otherwise reuse the main baked with the old patches, and the export check then fails on it."""
@@ -724,7 +732,9 @@ def phases(ctx: Ctx) -> List[Phase]:
                f"-Dest {q(D)} -Mods @()")
         steps = [Step("dist base (DLL, exefs, user)", PS[:-1] + ["-Command", cmd], envs)]
         for m in mods_rc:
-            steps.append(Step(f"mod {m} (prebuilt)", fn=lambda m=m: copy_prebuilt_mod(prebuilt / m, mods_tid / m)))
+            # Identity in the description (phase fingerprint): an updated prebuilt mod redoes the assembly.
+            steps.append(Step(f"mod {m} (prebuilt {dir_identity(prebuilt / m)})",
+                              fn=lambda m=m: copy_prebuilt_mod(prebuilt / m, mods_tid / m)))
     else:
         steps = [Step("dist base (DLL, exefs, user, repo mods)", PS + [str(REPO / "recomp/scripts/make-dist.ps1"), "-Recomp", str(ctx.build),
                       "-Export", str(pkg), "-Dest", str(D), "-Mods", ",".join(mods_rc)], envs)]
@@ -745,7 +755,10 @@ def phases(ctx: Ctx) -> List[Phase]:
     for m in P["dist"]["mods_platform"]:
         dst = mods_tid / m["id"]
         src = REPO / "build/port" / m["id"] / m["dll"]
-        steps.append(Step(f"mod {m['id']}: {m['dll']}", fn=lambda s=src, d=dst: (d.mkdir(parents=True, exist_ok=True), shutil.copy2(s, d))))
+        # The size/date in the description is part of the phase fingerprint: a new nnshim/nvnvk alone (a platform
+        # package where PLA.exe did not change) must redo the assembly, or an update leaves the old DLL in place.
+        steps.append(Step(f"mod {m['id']}: {m['dll']} ({file_identity(src)})",
+                          fn=lambda s=src, d=dst: (d.mkdir(parents=True, exist_ok=True), shutil.copy2(s, d))))
         for x in m.get("extra", []):
             steps.append(Step(f"mod {m['id']}: {x} (optional)", fn=lambda x=x, i=m["id"], d=dst: copy_extra(x, i, d, F)))
         if m["mod_json"] in ("nnshim_template", "gen_mod_json"):  # "gen_mod_json": old profile name
