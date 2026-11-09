@@ -146,6 +146,8 @@ int g_xinput_slot = -1;
 // One probe timer per backend: with a shared one, an SDL probe that finds nothing (an XInput
 // pad SDL does not list as a game controller) reset it right before the XInput probe every
 // second, so the XInput fallback never ran.
+enum class PadSrc { None, Sdl, XInput };
+PadSrc g_pad_src = PadSrc::None;   // backend that gave the controller state in the last sample (polling thread)
 Clock::time_point g_sdl_last_probe{};
 Clock::time_point g_xinput_last_probe{};
 #ifdef _WIN32
@@ -1039,9 +1041,9 @@ void ApplyRumble() {
     const uint16_t ulo = static_cast<uint16_t>(std::clamp(lo * k, 0.0f, 1.0f) * 65535);
     const uint16_t uhi = static_cast<uint16_t>(std::clamp(hi * k, 0.0f, 1.0f) * 65535);
 #ifdef _WIN32
-    if (g_pad && g_sdl.GameControllerRumble) {
+    if (g_pad_src == PadSrc::Sdl && g_pad && g_sdl.GameControllerRumble) {
         g_sdl.GameControllerRumble(g_pad, ulo, uhi, 120);
-    } else if (g_xinput_slot >= 0) {
+    } else if (g_pad_src == PadSrc::XInput && g_xinput_slot >= 0) {
         XINPUT_VIBRATION v{ulo, uhi};   // left motor = low frequency, right = high
         XInputSetState(static_cast<DWORD>(g_xinput_slot), &v);
     }
@@ -1053,8 +1055,18 @@ void PollOnce(int64_t dt_ns) {
     std::string dev = "none";
     const std::string& b = g_cfg.backend;
 #ifdef _WIN32
-    if (g_sdl.ok && (b == "auto" || b == "sdl2")) PollSdl(pad, dev);
-    if (!pad.connected && (b == "auto" || b == "xinput")) PollXInput(pad, dev);
+    // auto: XInput first, SDL2 only for controllers XInput does not see (PlayStation, Switch Pro...). An Xbox 360
+    // controller already plugged in at startup could be opened by SDL2 under its DirectInput name ("Controller (XBOX
+    // 360 For Windows)") and deliver no input at all for the whole session (issue #1), while XInput read it fine.
+    if (b == "auto") {
+        if (PollXInput(pad, dev)) g_pad_src = PadSrc::XInput;
+        else if (g_sdl.ok && PollSdl(pad, dev)) g_pad_src = PadSrc::Sdl;
+    } else if (b == "sdl2") {
+        if (g_sdl.ok && PollSdl(pad, dev)) g_pad_src = PadSrc::Sdl;
+    } else if (b == "xinput") {
+        if (PollXInput(pad, dev)) g_pad_src = PadSrc::XInput;
+    }
+    if (!pad.connected) g_pad_src = PadSrc::None;
     PollRemote();
 #endif
     uint64_t buttons = 0;
