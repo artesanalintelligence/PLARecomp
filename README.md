@@ -1,5 +1,7 @@
 # PLARecomp
 
+<a href="https://recomplauncher.com/game/plarecomp"><picture><source media="(prefers-color-scheme: dark)" srcset="https://recomplauncher.com/assets/press/launcher/badge-light.svg"><img alt="Get it on RecompLauncher" src="https://recomplauncher.com/assets/press/launcher/badge-dark.svg" height="48"></picture></a>
+
 Static recompilation and native PC port toolkit for a Nintendo Switch title, identified by its
 title ID **`01001F5010DFA000`** (version 1.1.1).
 

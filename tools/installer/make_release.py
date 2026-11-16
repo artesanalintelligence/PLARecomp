@@ -438,6 +438,7 @@ def main() -> int:
     bare = build_exe(work)
     full = a.out / "PLARecompSetup.exe"
     write_exe(bare, full, comps, True, a.url_base, a.release)
+    shutil.copy2(REPO / "recomplauncher.json", a.out / "recomplauncher.json")  # RecompLauncher manifest, next to PLARecompSetup.exe
     report = {"release": a.release, "exe": str(full), "exe_bytes": full.stat().st_size, "exe_sha256": sha256(full),
               "bare_exe_bytes": bare.stat().st_size,
               "exporter_source": {"file": src_out.name, "bytes": src_out.stat().st_size, "sha256": sha256(src_out)},

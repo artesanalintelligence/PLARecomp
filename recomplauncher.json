@@ -1,0 +1,30 @@
+{
+    "$schema": "https://recomplauncher.com/schema/recomplauncher.json",
+    "format": 1,
+    "name": "Pokemon Legends: Arceus",
+    "repo": "artesanalintelligence/PLARecomp",
+    "game": {
+        "kind": "iso_or_folder",
+        "label": "Your dump of Pokemon Legends: Arceus for Switch (base game plus update 1.1.1), as an NSP, NSZ, XCI or XCZ file, or its extracted folder. You also need the prod.keys and title.keys of your own console."
+    },
+    "start": {
+        "program": [
+            "PLA.exe"
+        ]
+    },
+    "saves": [
+        "{install}/user/save"
+    ],
+    "folders": {
+        "saves": [
+            {
+                "path": "{install}/user/save"
+            }
+        ],
+        "logs": [
+            {
+                "path": "{install}/user/log"
+            }
+        ]
+    }
+}
